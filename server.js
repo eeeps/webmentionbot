@@ -13,11 +13,8 @@ const fs = require('fs');
 fastify.get('/', async function (request, reply) {
     console.log('hi');
 
-  await fs.readFile('posts.json', 'utf8', function(err, data){
+  await fs.readFile('posts.txt', 'utf8', function(err, data){
     if (err) throw err;
-    
-    
-    
     reply.send(data);
   });
   
@@ -32,7 +29,7 @@ fastify.post('/post', function( request, reply ) {
     body: request.body
   }, null, 2 ) + '\n\n';
   
-  fs.appendFile('posts.json', logItem, function (err) {
+  fs.appendFile('posts.txt', logItem, function (err) {
     if (err) throw err;
   });
   
