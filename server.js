@@ -21,7 +21,12 @@ fastify.post('/', function( request, reply ) {
   
   console.log('Saved!');
   
-  reply.send( JSON.stringify(request.headers) )
+  reply.send( JSON.stringify({
+    time: new Date(),
+    ip: request.ip,
+    userAgent: request.headers["user-agent"],
+    body: request.body
+  }, null, 2 ) );
   
 });
 
