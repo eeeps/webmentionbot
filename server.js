@@ -2,7 +2,8 @@
 
 // CommonJs
 const fastify = require('fastify')({
-  logger: true
+  logger: true,
+  trustProxy: true // needed to get ips...
 });
 
 
@@ -13,20 +14,20 @@ fastify.get('/', function (request, reply) {
   reply.send({ hello: 'world' })
 });
 
-fastify.post('/', function( request, reply ) {
+fastify.post('/post', function( request, reply ) {
   
-  fs.appendFile('posts.txt', 'hi there ', function (err) {
+  const logItem = JSON.stringify({
+    time: new Date(),
+    ip: request.ips[request.ips.length - 1],
+    userAgent: request.headers["user-agent"],
+    body: request.body
+  }, null, 2 ) + '\n\n';
+  
+  fs.appendFile('posts.txt', logItem, function (err) {
     if (err) throw err;
   });
   
-  console.log('Saved!');
-  
-  reply.send( JSON.stringify({
-    time: new Date(),
-    ip: request.ip,
-    userAgent: request.headers["user-agent"],
-    body: request.body
-  }, null, 2 ) );
+  reply.send( logItem );
   
 });
 
