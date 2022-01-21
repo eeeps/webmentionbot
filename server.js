@@ -10,7 +10,7 @@ const fastify = require('fastify')({
 const fs = require('fs');
 
 // Declare a route
-fastify.get('/', async function (request, reply) {
+fastify.get('/', async function( request, reply ) {
     console.log('hi');
 
   await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
@@ -32,6 +32,8 @@ fastify.post('/post', async function( request, reply ) {
     } else {
       oldLog = JSON.parse( data ); 
     }
+    console.log('hello');
+    console.log(oldLog);
   });
   
   const newLogItem = {
