@@ -1,14 +1,13 @@
 {
   "name": "basic-listener",
   "version": "0.0.1",
-  "description": "listen to ",
+  "description": "listen for post requests and add them to a log",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^3.26.0",
-    "fastify-static": "^4.5.0"
+    "fastify": "^3.27.0"
   },
   "engines": {
     "node": "12.x"

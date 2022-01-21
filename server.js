@@ -1,15 +1,29 @@
 // Require the framework and instantiate it
 
-// ESM
-import Fastify from 'fastify'
-const fastify = Fastify({
+// CommonJs
+const fastify = require('fastify')({
   logger: true
-})
+});
+
+
+const fs = require('fs');
 
 // Declare a route
 fastify.get('/', function (request, reply) {
   reply.send({ hello: 'world' })
-})
+});
+
+fastify.post('/', function( request, reply ) {
+  
+  fs.appendFile('posts.txt', request.raw, function (err) {
+  if (err) throw err;
+  console.log('Saved!');
+  
+    reply.send( request.raw )
+    
+});
+  
+});
 
 // Run the server!
 fastify.listen(3000, function (err, address) {
@@ -18,4 +32,4 @@ fastify.listen(3000, function (err, address) {
     process.exit(1)
   }
   // Server is now listening on ${address}
-})
+});
