@@ -13,7 +13,7 @@ const fs = require('fs');
 fastify.get('/', async function (request, reply) {
     console.log('hi');
 
-  await fs.readFile('posts.txt', 'utf8', function(err, data){
+  await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
     if (err) throw err;
     reply.send(data);
   });
@@ -23,32 +23,33 @@ fastify.get('/', async function (request, reply) {
 fastify.post('/post', async function( request, reply ) {
   
   const parsedBody = JSON.parse(request.body);
-  let existingLog;
+  let oldLog;
   
   await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
     if (err) throw err;
-    if ( data === '' )
-    try {
-      const parsed = JSON.parse( data );
-      parsed.forEach( item => {
-        existingLog.
-      } );
-    } catch {}
+    if ( data === '' || data === null ) {
+      oldLog = [];
+    } else {
+      oldLog = JSON.parse( data ); 
+    }
   });
   
-  const logItem = JSON.stringify({
+  const newLogItem = {
     time: new Date(),
     ip: request.ips[request.ips.length - 1],
     userAgent: request.headers["user-agent"],
     url: parsedBody.url,
-    success: parsedBody.greatSuccess
-  }, null, 2 ) + '\n\n';
+    success: parsedBody.success
+  };
   
-  fs.writeFile('receivedBeacons.json', existing function (err) {
+  const newLog = [ newLogItem ].concat( oldLog ),
+        logString = JSON.stringify(newLog, null, 2);
+  
+  fs.writeFile('receivedBeacons.json', logString, function (err) {
     if (err) throw err;
   });
   
-  reply.send( logItem );
+  reply.send( JSON.stringify( newLogItem, null, 2 ) ); // helped me test...
   
 });
 
