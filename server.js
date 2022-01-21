@@ -22,11 +22,14 @@ fastify.get('/', async function (request, reply) {
 
 fastify.post('/post', function( request, reply ) {
   
+  const parsedBody = JSON.parse(request.body);
+  
   const logItem = JSON.stringify({
     time: new Date(),
     ip: request.ips[request.ips.length - 1],
     userAgent: request.headers["user-agent"],
-    body: request.body
+    url: parsedBody.url,
+    success: parsedBody.greatSuccess
   }, null, 2 ) + '\n\n';
   
   fs.appendFile('posts.txt', logItem, function (err) {
