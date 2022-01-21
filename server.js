@@ -23,17 +23,12 @@ fastify.get('/', async function( request, reply ) {
 fastify.post('/post', async function( request, reply ) {
   
   const parsedBody = JSON.parse(request.body);
-  let oldLog;
+  let oldLog = [];
   
   await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
     if (err) throw err;
-    if ( data === '' || data === null ) {
-      oldLog = [];
-    } else {
-      oldLog = JSON.parse( data ); 
-    }
-    console.log('hello');
-    console.log(oldLog);
+    console.log(data);
+    oldLog = JSON.parse( data );
   });
   
   const newLogItem = {
@@ -47,7 +42,7 @@ fastify.post('/post', async function( request, reply ) {
   const newLog = [ newLogItem ].concat( oldLog ),
         logString = JSON.stringify(newLog, null, 2);
   
-  fs.writeFile('receivedBeacons.json', logString, function (err) {
+  await fs.writeFile('receivedBeacons.json', logString, function (err) {
     if (err) throw err;
   });
   
