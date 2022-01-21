@@ -20,9 +20,21 @@ fastify.get('/', async function (request, reply) {
   
 });
 
-fastify.post('/post', function( request, reply ) {
+fastify.post('/post', async function( request, reply ) {
   
   const parsedBody = JSON.parse(request.body);
+  let existingLog;
+  
+  await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
+    if (err) throw err;
+    if ( data === '' )
+    try {
+      const parsed = JSON.parse( data );
+      parsed.forEach( item => {
+        existingLog.
+      } );
+    } catch {}
+  });
   
   const logItem = JSON.stringify({
     time: new Date(),
@@ -32,7 +44,7 @@ fastify.post('/post', function( request, reply ) {
     success: parsedBody.greatSuccess
   }, null, 2 ) + '\n\n';
   
-  fs.appendFile('posts.txt', logItem, function (err) {
+  fs.writeFile('receivedBeacons.json', existing function (err) {
     if (err) throw err;
   });
   
