@@ -15,13 +15,13 @@ fastify.get('/', function (request, reply) {
 
 fastify.post('/', function( request, reply ) {
   
-  fs.appendFile('/posts.txt', 'hi there ', function (err) {
+  fs.appendFile('posts.txt', 'hi there ', function (err) {
     if (err) throw err;
   });
   
   console.log('Saved!');
   
-  reply.send( 'hi')
+  reply.send( JSON.stringify(request.headers) )
   
 });
 
