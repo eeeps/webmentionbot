@@ -23,13 +23,10 @@ fastify.get('/', async function( request, reply ) {
 fastify.post('/post', async function( request, reply ) {
   
   const parsedBody = JSON.parse(request.body);
-  let oldLog = [];
   
-  await fs.readFile('receivedBeacons.json', 'utf8', function(err, data){
-    if (err) throw err;
-    console.log(data);
-    oldLog = JSON.parse( data );
-  });
+  const oldLogString = fs.readFileSync('receivedBeacons.json', 'utf8');
+  console.log(oldLogString);
+  const oldLog = JSON.parse( oldLogString );
   
   const newLogItem = {
     time: new Date(),
