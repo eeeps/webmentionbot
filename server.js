@@ -27,9 +27,10 @@ fastify.post( '/post', function( request, reply ) {
   const parsedBody = JSON.parse( request.body );
   const newLogItem = {
     time: new Date(),
-    ip: request.ips[ request.ips.length - 1 ],
-    userAgent: request.headers[ "user-agent" ],
-    url: parsedBody.url,
+    // ip: request.ips[ request.ips.length - 1 ],
+    // userAgent: request.headers[ "user-agent" ],
+    pageURL: parsedBody.pageURL,
+    variants: parsedBody.variants,
     success: parsedBody.success
   };
   
