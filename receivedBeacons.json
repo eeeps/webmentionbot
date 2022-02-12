@@ -1,5 +1,21 @@
 [
   {
+    "time": "2022-02-12T01:25:34.856Z",
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots/#",
+    "variants": {
+      "https://random-image-of-boots.glitch.me/boots.webp": "orchid"
+    },
+    "success": false
+  },
+  {
+    "time": "2022-02-12T01:18:10.982Z",
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots/",
+    "variants": {
+      "https://random-image-of-boots.glitch.me/boots.webp": "midnight"
+    },
+    "success": false
+  },
+  {
     "time": "2022-02-12T01:13:48.968Z",
     "pageURL": "https://ericportis.com/etc/insights-variants/boots/",
     "variants": {
