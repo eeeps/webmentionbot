@@ -19,20 +19,15 @@ fastify.get('/', async function( request, reply ) {
   
 } );
 
-fastify.post( '/post', function( request, reply ) {
+fastify.post( '/', function( request, reply ) {
   
   const oldLogString = fs.readFileSync( 'receivedBeacons.json', 'utf8' ),
         oldLog = JSON.parse( oldLogString );
   
-  const parsedBody = JSON.parse( request.body );
-  const newLogItem = {
-    time: new Date(),
-    // ip: request.ips[ request.ips.length - 1 ],
-    // userAgent: request.headers[ "user-agent" ],
-    pageURL: parsedBody.pageURL,
-    variants: parsedBody.variants,
-    success: parsedBody.success
-  };
+  const newLogItem = JSON.parse( request.body );
+  newLogItem.time = new Date();
+  // newLogItem.ip = request.ips[ request.ips.length - 1 ];
+  // newLogItem.userAgent = request.headers[ "user-agent" ];
   
   const newLog = [ newLogItem ].concat( oldLog ),
         logString = JSON.stringify( newLog, null, 2 );
