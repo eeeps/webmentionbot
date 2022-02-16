@@ -4,6 +4,17 @@
     "deliveredVariants": [
       {
         "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
+        "variantID": "orchid"
+      }
+    ],
+    "successfulEngagement": false,
+    "time": "2022-02-16T15:10:18.805Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
         "variantID": "midnight"
       }
     ],
