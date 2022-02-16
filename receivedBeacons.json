@@ -8,6 +8,17 @@
       }
     ],
     "successfulEngagement": false,
+    "time": "2022-02-16T17:02:52.784Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
+        "variantID": "midnight"
+      }
+    ],
+    "successfulEngagement": false,
     "time": "2022-02-16T16:40:41.418Z"
   },
   {
