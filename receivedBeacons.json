@@ -1,6 +1,18 @@
 [
   {
     "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [],
+    "successfulEngagement": false,
+    "time": "2022-02-16T04:46:09.530Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/?gtm_debug=1644986509950",
+    "deliveredVariants": [],
+    "successfulEngagement": true,
+    "time": "2022-02-16T04:43:39.254Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
     "deliveredVariants": [
       {
         "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
