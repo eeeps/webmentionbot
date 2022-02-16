@@ -1,29 +1,6 @@
 [
   {
     "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:46:09.530Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/?gtm_debug=1644986509950",
-    "deliveredVariants": [],
-    "successfulEngagement": true,
-    "time": "2022-02-16T04:43:39.254Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:40:07.557Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/?gtm_debug=1644986341098",
     "deliveredVariants": [
       {
         "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
@@ -31,50 +8,6 @@
       }
     ],
     "successfulEngagement": true,
-    "time": "2022-02-16T04:39:42.128Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:37:33.958Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "midnight"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:37:17.758Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "midnight"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:36:57.273Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-16T04:35:35.165Z"
+    "time": "2022-02-16T06:26:58.496Z"
   }
 ]
