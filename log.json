@@ -1,5 +1,16 @@
 [
   {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
+        "variantID": "orchid"
+      }
+    ],
+    "successfulEngagement": true,
+    "time": "2022-02-18T05:39:17.632Z"
+  },
+  {
     "time": "2022-02-18T00:14:53.284Z"
   },
   {
