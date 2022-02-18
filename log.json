@@ -4,6 +4,39 @@
     "deliveredVariants": [
       {
         "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
+        "variantID": "storm"
+      }
+    ],
+    "successfulEngagement": false,
+    "time": "2022-02-18T19:04:42.576Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
+        "variantID": "orchid"
+      }
+    ],
+    "successfulEngagement": true,
+    "time": "2022-02-18T19:04:16.523Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
+        "variantID": "orchid"
+      }
+    ],
+    "successfulEngagement": false,
+    "time": "2022-02-18T19:03:09.352Z"
+  },
+  {
+    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
+    "deliveredVariants": [
+      {
+        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
         "variantID": "orchid"
       }
     ],
