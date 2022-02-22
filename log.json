@@ -1,105 +1,15 @@
 [
   {
     "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "storm"
-      }
-    ],
+    "dynamicAssetURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
+    "dynamicAssetVariant": "storm",
     "successfulEngagement": false,
-    "time": "2022-02-18T19:04:42.576Z"
+    "time": "2022-02-22T23:15:21.723Z"
   },
   {
     "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "orchid"
-      }
-    ],
+    "dynamicAssetURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
     "successfulEngagement": true,
-    "time": "2022-02-18T19:04:16.523Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-18T19:03:09.352Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-18T19:02:21.664Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [],
-    "successfulEngagement": false,
-    "time": "2022-02-18T18:56:58.802Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [],
-    "successfulEngagement": false,
-    "time": "2022-02-18T18:55:29.483Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "storm"
-      }
-    ],
-    "successfulEngagement": false,
-    "time": "2022-02-18T07:17:15.798Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": true,
-    "time": "2022-02-18T07:16:32.931Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": true,
-    "time": "2022-02-18T05:39:17.632Z"
-  },
-  {
-    "time": "2022-02-18T00:14:53.284Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "deliveredVariants": [
-      {
-        "imageURL": "https://random-image-of-boots.glitch.me/boots.webp",
-        "variantID": "orchid"
-      }
-    ],
-    "successfulEngagement": true,
-    "time": "2022-02-17T23:56:55.279Z"
+    "time": "2022-02-22T23:14:29.675Z"
   }
 ]
