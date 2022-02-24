@@ -1,15 +1,1 @@
-[
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "dynamicAssetURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-    "dynamicAssetVariant": "storm",
-    "successfulEngagement": false,
-    "time": "2022-02-22T23:15:21.723Z"
-  },
-  {
-    "pageURL": "https://ericportis.com/etc/insights-variants/boots-gtm/",
-    "dynamicAssetURL": "https://random-image-of-boots.glitch.me/boots.webp?thisIsADynamicAsset",
-    "successfulEngagement": true,
-    "time": "2022-02-22T23:14:29.675Z"
-  }
-]
+[]

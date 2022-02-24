@@ -19,24 +19,29 @@ fastify.get('/', async function( request, reply ) {
 } );
 
 
-fastify.post( '/', function( request, reply ) {
+fastify.post( '/:featureName', function( request, reply ) {
   
-  const oldLogString = fs.readFileSync( 'log.json', 'utf8' ),
-        oldLog = JSON.parse( oldLogString );
+  const featureName = request.params.featureName;
+  const newLogItem = request.query;
+  newLogItem['feature'] = featureName
+  console.log( newLogItem );
   
-  const newLogItem = JSON.parse( request.body );
-  newLogItem.time = new Date();
-  // newLogItem.ip = request.ips[ request.ips.length - 1 ];
-  // newLogItem.userAgent = request.headers[ "user-agent" ];
+//   const oldLogString = fs.readFileSync( 'log.json', 'utf8' ),
+//         oldLog = JSON.parse( oldLogString );
   
-  const newLog = [ newLogItem ].concat( oldLog ),
-        logString = JSON.stringify( newLog, null, 2 );
+//   const newLogItem = JSON.parse( request.body );
+//   newLogItem.time = new Date();
+//   // newLogItem.ip = request.ips[ request.ips.length - 1 ];
+//   // newLogItem.userAgent = request.headers[ "user-agent" ];
   
-  fs.writeFile( 'log.json', logString, function( err ) {
-    if ( err ) throw err;
-  } );
+//   const newLog = [ newLogItem ].concat( oldLog ),
+//         logString = JSON.stringify( newLog, null, 2 );
   
-  reply.send( JSON.stringify( newLogItem, null, 2 ) ); // helped me test...
+//   fs.writeFile( 'log.json', logString, function( err ) {
+//     if ( err ) throw err;
+//   } );
+  
+//   reply.send( JSON.stringify( newLogItem, null, 2 ) ); // helped me test...
   
 } );
 
