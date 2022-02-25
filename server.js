@@ -9,9 +9,9 @@ const fastify = require('fastify')({
 const fs = require('fs');
 
 
-fastify.get('/', async function( request, reply ) {
+fastify.get('/', function( request, reply ) {
 
-  await fs.readFile( 'log.json', 'utf8', function( err, data ) {
+  fs.readFile( 'log.json', 'utf8', function( err, data ) {
     if ( err ) throw err;
     reply.send( data );
   } );
@@ -24,11 +24,13 @@ fastify.post( '/:featureName', function( request, reply ) {
   const oldLogString = fs.readFileSync( 'log.json', 'utf8' ),
         oldLog = JSON.parse( oldLogString );
   
+  console.log(request.query);
+  
   const newLogItem = request.query;
   newLogItem['feature'] = request.params.featureName;
   newLogItem.time = new Date();  
   // newLogItem.ip = request.ips[ request.ips.length - 1 ];
-  // newLogItem.userAgent = request.headers[ "user-agent" ];
+  newLogItem.userAgent = request.headers[ "user-agent" ];
   
   const newLog = [ newLogItem ].concat( oldLog ),
         logString = JSON.stringify( newLog, null, 2 );
