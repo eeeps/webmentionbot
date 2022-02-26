@@ -1,30 +1,9 @@
 [
   {
-    "document.visibilityState": "hidden",
-    "phase": "capturing",
-    "feature": "visibilitychange",
-    "time": "2022-02-26T00:25:01.647Z",
-    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36"
-  },
-  {
     "document.visibilityState": "visible",
     "phase": "target",
     "feature": "pagehide",
-    "time": "2022-02-26T00:16:57.190Z",
-    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Mobile/15E148 Safari/604.1"
-  },
-  {
-    "document.visibilityState": "visible",
-    "phase": "target",
-    "feature": "pagehide",
-    "time": "2022-02-26T00:16:45.429Z",
-    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Mobile/15E148 Safari/604.1"
-  },
-  {
-    "document.visibilityState": "visible",
-    "phase": "target",
-    "feature": "pagehide",
-    "time": "2022-02-26T00:16:29.420Z",
-    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Mobile/15E148 Safari/604.1"
+    "time": "2022-02-26T00:32:55.216Z",
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.5 Mobile/15E148 Safari/604.1"
   }
 ]
