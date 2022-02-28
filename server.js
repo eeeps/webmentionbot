@@ -1,3 +1,6 @@
+const {FastifySSEPlugin} = require( "fastify-sse-v2" );
+const EventIterator = require( "event-iterator" );
+
 // Require the framework and instantiate it
 
 // CommonJs
@@ -8,6 +11,9 @@ const fastify = require('fastify')({
 
 const fs = require('fs');
 
+
+
+fastify.register(FastifySSEPlugin);
 
 fastify.get('/', function( request, reply ) {
 
