@@ -17,10 +17,8 @@ fastify.register(FastifySSEPlugin);
 fastify.get("/", function (req, res) {
     res.sse((async function * source () {
           for (let i = 0; i < 10; i++) {
-            setTimeout( () => {
-              yield {id: String(i), data: "Some message"};
-            }, 1000 )
-            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            yield {id: String(i), data: "Some message"};  
           }
     })());
 });
