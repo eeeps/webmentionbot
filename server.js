@@ -1,4 +1,4 @@
-const {FastifySSEPlugin} = require( "fastify-sse-v2" );
+const {FastifySSEPlugin} = require('fastify-sse-v2');
 const EventIterator = require( "event-iterator" );
 
 // Require the framework and instantiate it
