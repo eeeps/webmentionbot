@@ -10,18 +10,36 @@ const fastify = require( 'fastify' )( {
 const fs = require('fs');
 const {FastifySSEPlugin} = require( 'fastify-sse-v2' );
 // const EventIterator = require('event-iterator');
+const {on, EventEmitter} = require("events");
+
 
 fastify.register(FastifySSEPlugin);
 
 
 fastify.get("/", function (req, res) {
-    res.sse((async function * source () {
-          for (let i = 0; i < 10; i++) {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            yield {id: String(i), data: "Some message"};  
-          }
-    })());
+    res.sse(
+  (async function* () {
+    for await (const event of on(EventEmmitter, "update")) {
+      yield {
+        type: event.name,
+        data: JSON.stringify(event),
+      };
+    }
+  })()
+);
 });
+
+
+
+// fastify.get("/", function (req, res) {
+//     res.header("Access-Control-Allow-Origin","*");
+//     res.sse((async function * source () {
+//           for (let i = 0; i < 10; i++) {
+//             await new Promise(resolve => setTimeout(resolve, 1000));
+//             yield {id: String(i), data: "Some message"};  
+//           }
+//     })());
+// });
 
 
 // fastify.get('/', function( request, reply ) {
