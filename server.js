@@ -15,18 +15,20 @@ const {on, EventEmitter} = require("events");
 
 fastify.register(FastifySSEPlugin);
 
+const ee = new EventEmitter();
 
-fastify.get("/", function (req, res) {
-    res.sse(
-  (async function* () {
-    for await (const event of on(EventEmmitter, "update")) {
-      yield {
-        type: event.name,
-        data: JSON.stringify(event),
-      };
-    }
-  })()
-);
+fastify.get("/events", function (req, res) {
+  res.header("Access-Control-Allow-Origin","*");
+  res.sse(
+    (async function* () {
+      for await (const event of on(ee, "update")) {
+        yield {
+          type: event.name,
+          data: JSON.stringify(event),
+        };
+      }
+    })()
+  );
 });
 
 
@@ -53,24 +55,27 @@ fastify.get("/", function (req, res) {
 
 
 fastify.post( '/:featureName', function( request, reply ) {
+
   
-  const oldLogString = fs.readFileSync( 'log.json', 'utf8' ),
-        oldLog = JSON.parse( oldLogString );
+//   const oldLogString = fs.readFileSync( 'log.json', 'utf8' ),
+//         oldLog = JSON.parse( oldLogString );
   
-  console.log(request.query);
+//   console.log(request.query);
   
   const newLogItem = request.query;
   newLogItem['feature'] = request.params.featureName;
   newLogItem.time = new Date();  
   // newLogItem.ip = request.ips[ request.ips.length - 1 ];
   newLogItem.userAgent = request.headers[ "user-agent" ];
+  ee.emit( 'update', newLogItem );
   
-  const newLog = [ newLogItem ].concat( oldLog ),
-        logString = JSON.stringify( newLog, null, 2 );
   
-  fs.writeFile( 'log.json', logString, function( err ) {
-    if ( err ) throw err;
-  } );
+//   const newLog = [ newLogItem ].concat( oldLog ),
+//         logString = JSON.stringify( newLog, null, 2 );
+  
+//   fs.writeFile( 'log.json', logString, function( err ) {
+//     if ( err ) throw err;
+//   } );
   
   reply.send( JSON.stringify( newLogItem, null, 2 ) ); // helped me test...
   
