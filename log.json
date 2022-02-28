@@ -1,6 +1,20 @@
 [
   {
     "document.visibilityState": "hidden",
+    "phase": "capturing",
+    "feature": "visibilitychange",
+    "time": "2022-02-28T19:34:48.687Z",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36"
+  },
+  {
+    "document.visibilityState": "hidden",
+    "phase": "capturing",
+    "feature": "visibilitychange",
+    "time": "2022-02-28T19:32:43.816Z",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36"
+  },
+  {
+    "document.visibilityState": "hidden",
     "phase": "target",
     "feature": "visibilitychange-window",
     "time": "2022-02-26T22:15:32.796Z",
