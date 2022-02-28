@@ -6,9 +6,7 @@
   "scripts": {
     "start": "node server.js"
   },
-  "dependencies": {
-    "fastify": "^3.27.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": "12.x"
   },
@@ -17,5 +15,9 @@
     "node",
     "glitch",
     "express"
-  ]
+  ],
+  "devDependencies": {
+    "fastify": "^3.27.2",
+    "fastify-sse-v2": "^2.0.6"
+  }
 }

@@ -1,28 +1,39 @@
-const {FastifySSEPlugin} = require('fastify-sse-v2');
-const EventIterator = require( "event-iterator" );
 
 // Require the framework and instantiate it
 
 // CommonJs
-const fastify = require('fastify')({
+const fastify = require( 'fastify' )( {
   logger: true,
 //  trustProxy: true // needed to get ips...
-});
+} );
 
 const fs = require('fs');
-
-
+const {FastifySSEPlugin} = require( 'fastify-sse-v2' );
+// const EventIterator = require('event-iterator');
 
 fastify.register(FastifySSEPlugin);
 
-fastify.get('/', function( request, reply ) {
 
-  fs.readFile( 'log.json', 'utf8', function( err, data ) {
-    if ( err ) throw err;
-    reply.send( data );
-  } );
+fastify.get("/", function (req, res) {
+    res.sse((async function * source () {
+          for (let i = 0; i < 10; i++) {
+            setTimeout( () => {
+              yield {id: String(i), data: "Some message"};
+            }, 1000 )
+            
+          }
+    })());
+});
+
+
+// fastify.get('/', function( request, reply ) {
+
+//   fs.readFile( 'log.json', 'utf8', function( err, data ) {
+//     if ( err ) throw err;
+//     reply.send( data );
+//   } );
   
-} );
+// } );
 
 
 fastify.post( '/:featureName', function( request, reply ) {
