@@ -38,9 +38,10 @@ dt {
 	display: table-cell;
 	padding: 0.5ch;
 }
-dd::before {
+dt::after {
 	content: ':';
-	margin-right: 1ch;
+  float: right;
+	margin-right: -1ch;
 	color: gray;
 }
 dd {

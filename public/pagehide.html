@@ -27,14 +27,34 @@ This website will send a beacon on <code>pagehide</code>.
 
 
 <script>
-let ua;
-if ( navigator.u)
+function potentiallyPrettyUserAgent( userAgentData, userAgentString ) {
+    if ( userAgentData && userAgentData.brands ) {
+    
+        const mainBrands = userAgentData.brands.filter( b => /(Chrome|Firefox|Safari)/.test( b.brand ) );
+        const brandsAndVersions = mainBrands.map( b => `${ b.brand } ${ b.version }` ).join(' / ');
+        const mobile = (
+            userAgentData.mobile && typeof userAgentData.mobile === 'string' ?
+            'Mobile ' :
+            ''
+        );
+        const platform = (
+            userAgentData.platform && typeof userAgentData.platform === 'string' ?
+            ` (${ userAgentData.platform })` :
+            ''
+        );
+        return mobile + brandsAndVersions + platform;
+    }
+    else {
+        return userAgentString;
+    }
+}
+const ua = potentiallyPrettyUserAgent( navigator.userAgentData, navigator.userAgent );
   
 addEventListener( 'pagehide', function( e ) {
   navigator.sendBeacon( '/', JSON.stringify(
     {
       'event': 'pagehide',
-      'user-agent': navigator.userAgent
+      'user-agent': ua
     }
   ) );
 } );
