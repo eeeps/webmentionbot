@@ -54,9 +54,9 @@ addEventListener( 'visibilitychange', function( e ) {
   if ( document.visibilityState === 'hidden' ) {
     navigator.sendBeacon( '/', JSON.stringify(
       {
-        'event.type': 'visibilitychange',
-        'user-agent': ua,
-        'eventPhase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase]
+        'event type': e.type,
+        'event phase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase],
+        'user-agent': ua
       }
     ) );
   }

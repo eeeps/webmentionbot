@@ -52,11 +52,11 @@ const ua = potentiallyPrettyUserAgent( navigator.userAgentData, navigator.userAg
   
 addEventListener( 'pagehide', function( e ) {
   navigator.sendBeacon( '/', JSON.stringify(
-    {
-      'event': 'pagehide',
-      'user-agent': ua
-      'eventPhase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase]
-    }
+      {
+        'event type': e.type,
+        'event phase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase],
+        'user-agent': ua
+      }
   ) );
 } );
 
