@@ -20,9 +20,10 @@ fastify.get( "/events", function ( req, res ) {
   res.sse(
     ( async function* () {
       for await ( const event of on( ee, 'update' ) ) {
-        console.log(event.name)
+        console.log(event[0])
         yield {
-          data: JSON.stringify( event )
+          id: (new Date()).toString(),
+          data: JSON.stringify( event[0] )
         };
       }
     } )()
@@ -54,8 +55,9 @@ fastify.get( "/events", function ( req, res ) {
 
 fastify.post( '/', function( request, reply ) {
 
-  const newLogItem = JSON.parse( request.body );
-  ee.emit( 'update', newLogItem);  
+  const newLogItem = request.body;
+  console.log( request.body );
+  ee.emit( 'update', newLogItem );  
   reply.send( JSON.stringify( newLogItem ) ); // helped me test...
   
 } );
