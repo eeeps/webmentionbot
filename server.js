@@ -20,14 +20,14 @@ const ee = new EventEmitter();
 fastify.get("/events", function (req, res) {
   res.header("Access-Control-Allow-Origin","*");
   res.sse(
-    (async function* () {
-      for await (const event of on(ee, "update")) {
+    ( async function* () {
+      for await ( const event of on( ee, "update" ) ) {
         yield {
-          type: event.name,
+          event: event.name,
           data: JSON.stringify(event),
         };
       }
-    })()
+    } )()
   );
 });
 
