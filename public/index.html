@@ -54,12 +54,12 @@ dd {
 
 <h1>Beacon 🪵</h1>
 
-<ol id='log'>
+<ol id="log">
 <li class="noneYet">We haven’t received any beacons yet.</li>
 </ol>
 
 <script>
-const es = new EventSource( 'https://yellow-thoracic-meteorite.glitch.me/events' );
+const es = new EventSource( '/events' );
 const log = document.querySelector( '#log' );
 
 es.addEventListener( 'message', ( event ) => {
