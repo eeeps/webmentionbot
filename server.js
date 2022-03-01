@@ -31,28 +31,6 @@ fastify.get( "/events", function ( req, res ) {
 });
 
 
-
-// fastify.get("/", function (req, res) {
-//     res.header("Access-Control-Allow-Origin","*");
-//     res.sse((async function * source () {
-//           for (let i = 0; i < 10; i++) {
-//             await new Promise(resolve => setTimeout(resolve, 1000));
-//             yield {id: String(i), data: "Some message"};  
-//           }
-//     })());
-// });
-
-
-// fastify.get('/', function( request, reply ) {
-
-//   fs.readFile( 'log.json', 'utf8', function( err, data ) {
-//     if ( err ) throw err;
-//     reply.send( data );
-//   } );
-  
-// } );
-
-
 fastify.post( '/', function( request, reply ) {
 
   const newLogItem = request.body;
@@ -63,23 +41,9 @@ fastify.post( '/', function( request, reply ) {
 } );
 
 
-fastify.delete( '/', function( request, reply ) {
-  
-  
-  fs.writeFile( 'log.json', '[]', function( err ) {
-    if ( err ) throw err;
-  } );
-  
-  reply.code(204).send( null );
-  
-} );
-
-
-// Run the server!
 fastify.listen( 3000, function ( err, address ) {
   if ( err ) {
     fastify.log.error( err );
     process.exit( 1 );
   }
-  // Server is now listening on ${address}
 } );
