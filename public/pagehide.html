@@ -27,7 +27,8 @@ This website will send a beacon on <code>pagehide</code>.
 
 
 <script>
-
+let ua;
+if ( navigator.u)
   
 addEventListener( 'pagehide', function( e ) {
   navigator.sendBeacon( '/', JSON.stringify(
