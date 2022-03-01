@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>👋 pagehide beaconer</title>
+<title>👋 visibilitychange beaconer</title>
 <meta name="viewport" content="width=device-width">
 <style>
 html {
@@ -15,10 +15,10 @@ code {
 </head>
 <body>
 
-<h1>👋 <code>pagehide</code> beaconer</h1>
+<h1>👋 <code>visibilitychange</code> beaconer</h1>
 
 <p>
-This website will send a beacon on <code>pagehide</code>.
+This website will send a beacon on <code>visibilitychange</code> when <code>visibilityState</code> is <code>hidden</code>.
 </p>
 
 <ul>
@@ -50,15 +50,17 @@ function potentiallyPrettyUserAgent( userAgentData, userAgentString ) {
 }
 const ua = potentiallyPrettyUserAgent( navigator.userAgentData, navigator.userAgent );
   
-addEventListener( 'pagehide', function( e ) {
-  navigator.sendBeacon( '/', JSON.stringify(
-    {
-      'event': 'pagehide',
-      'user-agent': ua
-      'eventPhase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase]
-    }
-  ) );
-} );
+addEventListener( 'visibilitychange', function( e ) {
+  if ( document.visibilityState === 'hidden' ) {
+    navigator.sendBeacon( '/', JSON.stringify(
+      {
+        'event.type': 'visibilitychange',
+        'user-agent': ua,
+        'eventPhase': ['none', 'capturing', 'at_target', 'bubbling' ][e.eventPhase]
+      }
+    ) );
+  }
+}, true );
 
 </script>
 
