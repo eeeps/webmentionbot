@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>👋 pagehide beaconer</title>
+<meta name="viewport" content="width=device-width">
+<style>
+html {
+	font-family: system-ui, sans-serif;
+}
+code {
+  font-family: menlo, monospace;
+}
+</style>
+</head>
+<body>
+
+<h1>👋 <code>pagehide</code> beaconer</h1>
+
+<p>
+This website will send a beacon on <code>pagehide</code>.
+</p>
+
+<ul>
+<li><a href="/">🪵 logs</a>
+</ul>
+
+
+<script>
+
+// POST some JSON to an endpoint
+function sendBeacon( feature, keyValues ) {
+	
+	navigator.sendBeacon(
+		'https://query-parameter-logger.glitch.me/' + feature + '?' +
+		objectToQueryParameters( keyValues )
+	);
+	
+}
+
+addEventListener( 'pagehide', function( e ) {
+  navigator.sendBeacon( '/',
+    {
+      'event': 'pagehide',
+      'user-agent': navigator.userAgent
+    }
+  );
+} );
+
+</script>
+
+</body>
+</html>
