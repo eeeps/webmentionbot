@@ -7,24 +7,23 @@ const fastify = require( 'fastify' )( {
 //  trustProxy: true // needed to get ips...
 } );
 
-const fs = require('fs');
-const {FastifySSEPlugin} = require( 'fastify-sse-v2' );
+const fs = require( 'fs' );
+const { FastifySSEPlugin } = require( 'fastify-sse-v2' );
 // const EventIterator = require('event-iterator');
-const {on, EventEmitter} = require("events");
-
-
-fastify.register(FastifySSEPlugin);
+const { on, EventEmitter } = require( 'events' );
+fastify.register( FastifySSEPlugin) ;
 
 const ee = new EventEmitter();
 
-fastify.get("/events", function (req, res) {
-  res.header("Access-Control-Allow-Origin","*");
+fastify.get( "/events", function ( req, res ) {
+  res.header( "Access-Control-Allow-Origin", "*" );
   res.sse(
     ( async function* () {
-      for await ( const event of on( ee, "update" ) ) {
+      for await ( const event of on( ee, 'update' ) ) {
+        console.log(event.name)
         yield {
-          event: event.name,
-          data: JSON.stringify(event),
+          type: event.name,
+          data: JSON.stringify( event ),
         };
       }
     } )()
