@@ -22,7 +22,7 @@ fastify.get( "/events", function ( req, res ) {
       for await ( const event of on( ee, 'update' ) ) {
         console.log(event[0])
         yield {
-          id: (new Date()).toString(),
+          id: (new Date()).toISOString(),
           data: JSON.stringify( event[0] )
         };
       }
