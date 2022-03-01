@@ -40,11 +40,12 @@ fastify.get( "/events", function ( req, res ) {
   res.sse(
     ( async function* () {
       for await ( const event of on( ee, 'update' ) ) {
-        console.log(event[0])
-        yield {
-          id: (new Date()).toISOString(),
-          data: JSON.stringify( event[0] )
-        };
+        for ( const e of event ) {
+          yield {
+            id: (new Date()).toISOString(),
+            data: e
+          };
+        }
       }
     } )()
   );
