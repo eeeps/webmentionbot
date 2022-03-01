@@ -27,24 +27,14 @@ This website will send a beacon on <code>pagehide</code>.
 
 
 <script>
-
-// POST some JSON to an endpoint
-function sendBeacon( feature, keyValues ) {
-	
-	navigator.sendBeacon(
-		'https://query-parameter-logger.glitch.me/' + feature + '?' +
-		objectToQueryParameters( keyValues )
-	);
-	
-}
-
+  
 addEventListener( 'pagehide', function( e ) {
-  navigator.sendBeacon( '/',
+  navigator.sendBeacon( '/', JSON.stringify(
     {
       'event': 'pagehide',
       'user-agent': navigator.userAgent
     }
-  );
+  ) );
 } );
 
 </script>
