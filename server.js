@@ -20,13 +20,17 @@ fastify.register(require('fastify-static'), {
 
 // receive new beacons
 
-fastify.post( '/:params', function( request, reply ) {
+fastify.post( '/:path', function( request, reply ) {
 
-  const params = request.params;
+  const params = request.params; // only captures before first slash
   const body = request.body;
   const query = request.query;
   
-  const newLogItem = {};
+  const newLogItem = {
+    ...params,
+    ...body,
+    ...query
+  };
   
   console.log( path, body, query );
   
