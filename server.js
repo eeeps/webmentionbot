@@ -20,10 +20,20 @@ fastify.register(require('fastify-static'), {
 
 // receive new beacons
 
-fastify.post( '/', function( request, reply ) {
+fastify.post( '/:params', function( request, reply ) {
 
-  const newLogItem = request.body;
+  const params = request.params;
+  const body = request.body;
+  const query = request.query;
+  
+  const newLogItem = {};
+  
+  console.log( path, body, query );
+  
+  
+  
   console.log( request.body );
+  
   ee.emit( 'update', newLogItem );  
   reply.send( JSON.stringify( newLogItem ) ); // helped me test...
   
