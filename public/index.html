@@ -75,20 +75,39 @@ es.addEventListener( 'message', ( event ) => {
 	const small = document.createElement( 'small' );
 	small.textContent = id;
 	
-	const dl = document.createElement( 'dl' );
+	
   
-	for ( const key of Object.keys( json ) ) {
-		const div = document.createElement( 'div' );
-		const dt = document.createElement( 'dt' );
-		dt.textContent = key;
-		const dd = document.createElement( 'dd' );
-		dd.textContent = json[ key ];
-		div.appendChild( dt );
-		div.appendChild( dd );
-		dl.appendChild( div );
-	}
+  // if there's a path
+  if ( json.path !== '' ) {
+    
+  }
+  
+  // if there's a body
+  if ( Object.keys( json.body ) && Object.keys( json.body ).length > 0 ) {
+    
+  }
+  
+  // if there are query parameters
+  if ( Object.keys( json.queryParameters ) && Object.keys( json.queryParameters ).length > 0 ) {
+    const h2 = document.createElement( 'h2' );
+    h2.textContent = 'Query parameters'
+    const dl = document.createElement( 'dl' );
+    for ( const key of Object.keys( json.queryParameters ) ) {
+      const div = document.createElement( 'div' );
+      const dt = document.createElement( 'dt' );
+      dt.textContent = key;
+      const dd = document.createElement( 'dd' );
+      dd.textContent = json.queryParameters[ key ];
+      div.appendChild( dt );
+      div.appendChild( dd );
+      dl.appendChild( div );
+    }
+    li.appendChild( h2 );
+    li.appendChild( dl );
+  }
+  
+
 	li.appendChild( small );
-	li.appendChild( dl );
 	
 	const waiting = document.querySelector('.noneYet');
 	
