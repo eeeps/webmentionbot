@@ -76,6 +76,7 @@ es.addEventListener( 'message', ( event ) => {
 	small.textContent = id;
 	
 	const dl = document.createElement( 'dl' );
+  
 	for ( const key of Object.keys( json ) ) {
 		const div = document.createElement( 'div' );
 		const dt = document.createElement( 'dt' );

@@ -22,21 +22,18 @@ fastify.register(require('fastify-static'), {
 
 fastify.post( '/:path', function( request, reply ) {
 
-  const params = request.params; // only captures before first slash
+  const path = request.params.path; // only captures before first slash
   const body = request.body;
   const query = request.query;
   
   const newLogItem = {
-    ...params,
-    ...body,
-    ...query
-  };
+    path,
+    queryParameters: { ...query },
+    body: JSON.parse( JSON.stringify( body ) )
+  }
   
-  console.log( path, body, query );
+  console.log( newLogItem );
   
-  
-  
-  console.log( request.body );
   
   ee.emit( 'update', newLogItem );  
   reply.send( JSON.stringify( newLogItem ) ); // helped me test...
