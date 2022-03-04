@@ -32,8 +32,7 @@ fastify.post( '/:path', function( request, reply ) {
     body: JSON.parse( JSON.stringify( body ) )
   }
   
-  console.log( newLogItem );
-  
+  // console.log( newLogItem );
   
   ee.emit( 'update', newLogItem );  
   reply.send( JSON.stringify( newLogItem ) ); // helped me test...
@@ -52,9 +51,10 @@ fastify.get( "/events", function ( req, res ) {
     ( async function* () {
       for await ( const event of on( ee, 'update' ) ) {
         for ( const e of event ) {
+          console.log(e);
           yield {
             id: (new Date()).toISOString(),
-            data: e
+            data: JSON.stringify( e )
           };
         }
       }

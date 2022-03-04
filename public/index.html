@@ -69,6 +69,10 @@ es.addEventListener( 'message', ( event ) => {
 	
 	const li = document.createElement( 'li' );
 	
+  console.log( event );
+  console.log( event.data );
+  console.log( typeof event.data );
+  
 	const json = JSON.parse( event.data );
 	const id = event.lastEventId;
 	
