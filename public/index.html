@@ -74,40 +74,39 @@ es.addEventListener( 'message', ( event ) => {
 	
 	const small = document.createElement( 'small' );
 	small.textContent = id;
-	
-	
+	li.appendChild( small );
   
   // if there's a path
-  if ( json.path !== '' ) {
-    
-  }
-  
-  // if there's a body
-  if ( Object.keys( json.body ) && Object.keys( json.body ).length > 0 ) {
-    
+  if ( json.path && json.path !== '' ) {
+    const h2 = document.createElement( 'h2' );
+    h2.textContent = 'Path'
+    li.appendChild( h2 );
+    li.appendChild( json2html( json.queryParameters ) );
   }
   
   // if there are query parameters
-  if ( Object.keys( json.queryParameters ) && Object.keys( json.queryParameters ).length > 0 ) {
+  if (
+      json.queryParameters &&
+      Object.keys( json.queryParameters ) &&
+      Object.keys( json.queryParameters ).length > 0
+  ) {
     const h2 = document.createElement( 'h2' );
     h2.textContent = 'Query parameters'
-    const dl = document.createElement( 'dl' );
-    for ( const key of Object.keys( json.queryParameters ) ) {
-      const div = document.createElement( 'div' );
-      const dt = document.createElement( 'dt' );
-      dt.textContent = key;
-      const dd = document.createElement( 'dd' );
-      dd.textContent = json.queryParameters[ key ];
-      div.appendChild( dt );
-      div.appendChild( dd );
-      dl.appendChild( div );
-    }
     li.appendChild( h2 );
-    li.appendChild( dl );
+    li.appendChild( json2html( json.queryParameters ) );
   }
   
-
-	li.appendChild( small );
+  // if there's a body
+  if (
+    json.body &&
+    Object.keys( json.body ) &&
+    Object.keys( json.body ).length > 0
+  ) {
+    const h2 = document.createElement( 'h2' );
+    h2.textContent = 'Body'
+    li.appendChild( h2 );
+    li.appendChild( json2html( json.body ) );
+  }
 	
 	const waiting = document.querySelector('.noneYet');
 	
@@ -118,6 +117,53 @@ es.addEventListener( 'message', ( event ) => {
 	}
 	
 } );
+  
+
+function json2html( v ) {
+	
+	// array
+	if ( Array.isArray( v ) ) {
+		
+		const ol = document.createElement( 'ol' );
+		
+		for ( const item of v ) {
+			const li = document.createElement( 'li' );
+			li.appendChild( valueToHTML( item ) );
+			ol.appendChild( li );
+		}
+		
+		return ol;
+		
+	}
+	
+	// object
+	if ( Object.getPrototypeOf( v ) === Object.prototype ) {
+		
+		const dl = document.createElement( 'dl' );
+		
+		for ( const [ key, value ] of Object.entries( v ) ) {
+			
+			const div = document.createElement( 'div' ),
+			      dt = document.createElement( 'dt' ),
+			      dd = document.createElement( 'dd' );
+			
+			dt.appendChild( document.createTextNode( key.toString() ) );
+			dd.appendChild( valueToHTML( value ) );
+			
+			div.appendChild( dt );
+			div.appendChild( dd );
+			dl.appendChild( div );
+			
+		}
+		
+		return dl;
+		
+	}
+	
+	// primitive
+	return document.createTextNode( v.toString() );
+	
+}
 
 </script>
 
