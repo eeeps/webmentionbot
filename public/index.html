@@ -80,13 +80,16 @@ es.addEventListener( 'message', ( event ) => {
 	small.textContent = id;
 	li.appendChild( small );
   
+  const h2 = document.createElement( 'h2' );
+  
   // if there's a path
   if ( json.path && json.path !== '' ) {
-    const h2 = document.createElement( 'h2' );
-    h2.textContent = 'Path'
-    li.appendChild( h2 );
-    li.appendChild( json2html( json.queryParameters ) );
+    h2.textContent = `/${json.path}`;
+  } else {
+    h2.textContent = '/';
   }
+  
+  li.appendChild( h2 );
   
   // if there are query parameters
   if (
@@ -94,9 +97,9 @@ es.addEventListener( 'message', ( event ) => {
       Object.keys( json.queryParameters ) &&
       Object.keys( json.queryParameters ).length > 0
   ) {
-    const h2 = document.createElement( 'h2' );
-    h2.textContent = 'Query parameters'
-    li.appendChild( h2 );
+    const h3 = document.createElement( 'h3' );
+    h3.textContent = 'Query parameters'
+    li.appendChild( h3 );
     li.appendChild( json2html( json.queryParameters ) );
   }
   
@@ -106,9 +109,9 @@ es.addEventListener( 'message', ( event ) => {
     Object.keys( json.body ) &&
     Object.keys( json.body ).length > 0
   ) {
-    const h2 = document.createElement( 'h2' );
-    h2.textContent = 'Body'
-    li.appendChild( h2 );
+    const h3 = document.createElement( 'h3' );
+    h3.textContent = 'Body'
+    li.appendChild( h3 );
     li.appendChild( json2html( json.body ) );
   }
 	
@@ -132,7 +135,7 @@ function json2html( v ) {
 		
 		for ( const item of v ) {
 			const li = document.createElement( 'li' );
-			li.appendChild( valueToHTML( item ) );
+			li.appendChild( json2html( item ) );
 			ol.appendChild( li );
 		}
 		
@@ -152,7 +155,7 @@ function json2html( v ) {
 			      dd = document.createElement( 'dd' );
 			
 			dt.appendChild( document.createTextNode( key.toString() ) );
-			dd.appendChild( valueToHTML( value ) );
+			dd.appendChild( json2html( value ) );
 			
 			div.appendChild( dt );
 			div.appendChild( dd );
