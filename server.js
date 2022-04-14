@@ -50,10 +50,19 @@ fastify.post( '/', ( req, reply ) => {
   }
   
   // The receiver must reject the request if the source URL is the same as the target URL.
-  if ( sourceURL === targetURL ) {
+  if ( sourceURL.href === targetURL.href ) {
     reply.code( 400 ).send( "source and target must not be the same" );
     return;
   }
+  
+  // The receiver should check that target is a valid resource for which it can accept Webmentions.
+  // This check should happen synchronously to reject invalid Webmentions before more in-depth verification begins.
+  if ( targetURL.hostname !== 'ericportis.com' ) {
+    reply.code( 400 ).send( "target must be on ericportis.com" );
+    return;
+  }
+  
+  // TODO other checks?
   
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
@@ -61,7 +70,10 @@ fastify.post( '/', ( req, reply ) => {
     .code( 202 )
     .send( { sourceURL, targetURL } );
   
+  processValidWebmentionRequest( { source, target } );
+  
 } );
+
 
 
 
