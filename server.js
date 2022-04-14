@@ -84,7 +84,8 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // following any HTTP redirects (and should limit the number of redirects it follows)
   // to confirm that it actually mentions the target.
   
-  
+  const jsdom = require("jsdom");
+  npconst { JSDOM } = jsdom;
   
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
   
