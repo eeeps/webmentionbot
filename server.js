@@ -43,11 +43,14 @@ fastify.post( '/', ( req, reply ) => {
   // (Most commonly this means checking that the source and target schemes are http or https).
   
   const acceptableProtocols = [ 'http:', 'https:' ]
-  if ( !acceptableProtocols.contains( sourceURL.protocol ) || 
-       !acceptableProtocols.contains( targetURL.protocol ) ) {
+  if ( !acceptableProtocols.includes( sourceURL.protocol ) || 
+       !acceptableProtocols.includes( targetURL.protocol ) ) {
     reply.code( 400 ).send( "Source and target must be HTTP: or HTTPS:" );
     return;
   }
+  
+  // The receiver must reject the request if the source URL is the same as the target URL.
+  
   
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
