@@ -67,14 +67,15 @@ fastify.post( '/', ( req, reply ) => {
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
   reply
+    .then( (sourceURL,targetURL) => {}, () => {} )
     .code( 202 )
     .send( { sourceURL, targetURL } );
   
-  processValidWebmentionRequest( { source, target } );
-  
 } );
 
-
+async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
+  console.log( sourceURL, targetURL );
+}
 
 
 fastify.listen( 3000, function ( err, address ) {
