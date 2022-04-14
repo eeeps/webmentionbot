@@ -85,7 +85,12 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // to confirm that it actually mentions the target.
   
   const jsdom = require("jsdom");
-  npconst { JSDOM } = jsdom;
+  const { JSDOM } = jsdom;
+  const fetch = await import('node-fetch');
+  
+  const response = await fetch(sourceURL.href);
+  const dom = new JSDOM(response.body);
+  console.log( dom.querySelector(`a[href=${targetURL.href}]`) )
   
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
   

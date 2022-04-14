@@ -7,7 +7,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify-formbody": "^5.2.0"
+    "fastify-formbody": "^5.2.0",
+    "node-fetch": "^3.2.3"
   },
   "engines": {
     "node": "14.x"
