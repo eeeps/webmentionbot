@@ -12,7 +12,9 @@ fastify.register( require( 'fastify-formbody' ) );
 // receive posts
 
 fastify.post( '/', ( req, reply ) => {
-  reply.send( req.body )
+  reply
+    .code(202)
+    .send( req.body )
 } );
 
 
