@@ -67,14 +67,31 @@ fastify.post( '/', ( req, reply ) => {
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
   reply
-    .then( (sourceURL,targetURL) => {}, () => {} )
     .code( 202 )
-    .send( { sourceURL, targetURL } );
+    .send( { sourceURL, targetURL } )
+    .then( () => { processValidWebmentionRequest( { sourceURL, targetURL } )}, () => {} );
   
 } );
 
+// 3.2.2 Webmention Verification
+// Webmention verification should be handled asynchronously to prevent DoS (Denial of Service) attacks.
+
 async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
-  console.log( sourceURL, targetURL );
+
+  // If the receiver is going to use the Webmention in some way,
+  // (displaying it as a comment on a post, incrementing a "like" counter, notifying the author of a post),
+  // then it must perform an HTTP GET request on source, 
+  // following any HTTP redirects (and should limit the number of redirects it follows)
+  // to confirm that it actually mentions the target.
+  
+  
+  
+  // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
+  
+  
+  setTimeout(function () {
+    console.log( sourceURL.href, targetURL.href );
+  }, 5000);
 }
 
 

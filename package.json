@@ -19,6 +19,7 @@
   ],
   "devDependencies": {
     "fastify": "^3.27.2",
-    "fastify-static": "^4.5.0"
+    "fastify-static": "^4.5.0",
+    "jsdom": "^19.0.0"
   }
 }
