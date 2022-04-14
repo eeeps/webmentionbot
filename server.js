@@ -29,7 +29,8 @@ fastify.post( '/', ( req, reply ) => {
   // 3.2.1 Request Verification
   // The receiver must check that source and target are valid URLs...
   
-  const myURL = new URL('https://example.org/abc/xyz?123');
+  const sourceURL = new URL( req.body.source );
+  const targetURL = new URL( req.body.target );
   
   
   // ...and are of schemes that are supported by the receiver.
@@ -39,7 +40,7 @@ fastify.post( '/', ( req, reply ) => {
   
   reply
     .code( 202 )
-    .send( req.body );
+    .send( { sourceURL, targetURL } );
   
 } );
 
