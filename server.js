@@ -50,7 +50,10 @@ fastify.post( '/', ( req, reply ) => {
   }
   
   // The receiver must reject the request if the source URL is the same as the target URL.
-  
+  if ( sourceURL === targetURL ) {
+    reply.code( 400 ).send( "source and target must not be the same" );
+    return;
+  }
   
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
