@@ -102,7 +102,7 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   
   const bodyText = await response.text();
   
-  if ( !mentionsTarget( bodyText, targetURL ) ) {
+  if ( !mentionsTarget( bodyText, targetURL, response.headers.get('content-type') ) ) {
     console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
@@ -110,9 +110,18 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   console.log('TODO add mention to db')
 }
 
-function mentionsTarget( bodyText, targetURL ) {
-  // spec says you MAY do per-content-type processing, lists some examples
-  // but this seems universal and is quite simple
+function mentionsTarget( bodyText, targetURL, contentType ) {
+  // spec says you SHOULD do per-content-type processing, lists some examples
+  // doing a simple regex would universal across content types and is quite simple
+  // biggest flaw is that it includes substrings
+  // e.g., target=https://ericportis.com would match a target document containing
+  //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
+  // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
+  
+  if ( new RegExp( 'text\/html', 'i' ).test( contentType ) ) {
+    console.log('html!')
+  }
+  
   return ( new RegExp( targetURL )).test( bodyText );
 }
 
