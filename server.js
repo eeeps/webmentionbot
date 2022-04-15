@@ -87,14 +87,17 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // then it must perform an HTTP GET request on source, 
   // following any HTTP redirects (and should limit the number of redirects it follows)
   // to confirm that it actually mentions the target.
-  
-  
-  const response = await fetch( sourceURL.href );
-  const dom = new JSDOM( await response.text() );
-  console.log( dom.window.document.querySelector(`a[href='${targetURL.href}//']`) )
-  
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
-  
+
+  const response = await fetch( sourceURL.href, {
+    headers: {
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+    },
+  	redirect: 'follow',
+	  follow: 20
+  } );
+  const dom = new JSDOM( await response.text() );
+  const linkToTarget = dom.window.document.querySelector(`a[href='${targetURL.href}//']`);  
   
   setTimeout(function () {
     // console.log( sourceURL.href, targetURL.href );
