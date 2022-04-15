@@ -11,6 +11,9 @@ fastify.register( fastifyFormbody );
 
 import url from 'url';
 
+import { JSDOM } as jsdom from = "jsdom";
+import 'node-fetch';
+
 
 // receive posts
 
@@ -85,9 +88,6 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // following any HTTP redirects (and should limit the number of redirects it follows)
   // to confirm that it actually mentions the target.
   
-  const jsdom = require("jsdom");
-  const { JSDOM } = jsdom;
-  const fetch = await import('node-fetch');
   
   const response = await fetch(sourceURL.href);
   const dom = new JSDOM(response.body);
