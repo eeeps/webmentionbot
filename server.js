@@ -1,16 +1,16 @@
 
 // fastify
-import Fastify from 'fastify'
+import Fastify from 'fastify';
 const fastify = Fastify({
   logger: true
-})
+});
 
 import fastifyFormbody from 'fastify-formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
 
 import url from 'url';
-import fetch from 'node-fetch'
+import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 
@@ -24,7 +24,7 @@ fastify.post( '/', ( req, reply ) => {
   if ( !( req.body.source && req.body.target ) ) {
     reply
       .code( 400 )
-      .send( "POST request must contain x-www-form-urlencoded source and target parameters" );
+      .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
     return;
   }
   
@@ -70,7 +70,7 @@ fastify.post( '/', ( req, reply ) => {
   
   reply
     .code( 202 )
-    .send( { sourceURL, targetURL } )
+    .send( 'Thanks for the webmention! We still need to do some additional verification and moderation; if it passes muster, it\'ll show up on the site.' )
     .then( () => { processValidWebmentionRequest( { sourceURL, targetURL } ) }, () => {} );
   
 } );
@@ -127,7 +127,8 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
     return anchor && anchor.nodeName && anchor.nodeName === 'A';
   }
   
-  return ( new RegExp( targetURL )).test( bodyText );
+  return ( new RegExp( targetURL ) ).test( bodyText );
+  
 }
 
 function isHTMLish( contentType ) {
@@ -146,4 +147,3 @@ fastify.listen( 3000, function ( err, address ) {
     process.exit( 1 );
   }
 } );
-
