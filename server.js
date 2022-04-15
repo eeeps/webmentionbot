@@ -10,9 +10,9 @@ import fastifyFormbody from 'fastify-formbody';
 fastify.register( fastifyFormbody );
 
 import url from 'url';
-
-import { JSDOM } as jsdom from = "jsdom";
-import 'node-fetch';
+import fetch from 'node-fetch'
+import jsdom from "jsdom";
+const { JSDOM } = jsdom;
 
 
 // receive posts
@@ -66,7 +66,7 @@ fastify.post( '/', ( req, reply ) => {
     return;
   }
   
-  // TODO other checks?
+  // TODO I shuold probably check against some list of valid URLs?
   
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
@@ -89,8 +89,8 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // to confirm that it actually mentions the target.
   
   
-  const response = await fetch(sourceURL.href);
-  const dom = new JSDOM(response.body);
+  const response = await fetch( sourceURL.href );
+  const dom = new JSDOM( response.body );
   console.log( dom.querySelector(`a[href=${targetURL.href}]`) )
   
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
