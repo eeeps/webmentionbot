@@ -88,6 +88,8 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   // to confirm that it actually mentions the target.
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
 
+  console.log( `Asynchronously verifying webmention with source='${ sourceURL.href }' and target='${ targetURL.href }'` )
+  
   const response = await fetch( sourceURL.href, {
     headers: {
       'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
@@ -122,8 +124,7 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
   if ( new RegExp( 'text\/html', 'i' ).test( contentType ) ) {
     const { document } = ( new JSDOM( bodyText ) ).window;
     const anchor = document.querySelector( `a[href='${ targetURL }']` );
-    console.log( { anchor, type: typeof anchor, p: Object.getPrototypeOf(anchor) === HTMLAnchorElement } )
-    return anchor !== null;
+    return anchor && anchor.nodeName && anchor.nodeName === 'A';
   }
   
   return ( new RegExp( targetURL )).test( bodyText );
