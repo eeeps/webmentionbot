@@ -102,20 +102,18 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
     return;
   }
   
-  console.log( containsLink( response, targetURL ) )
+  const bodyText = await response.text();
   
-  const dom = new JSDOM( await response.text() );
-  //  The source document must have an exact match of the target URL provided in order for it to be considered a valid Webmention.
-  const linkToTarget = dom.window.document.querySelector(`a[href='${targetURL.href}//']`);  
+  if ( !containsTarget( bodyText, targetURL ) ) {
+    console.log( 'source URL did not mention target' )
+    return;
+  }
   
-  setTimeout(function () {
-    // console.log( sourceURL.href, targetURL.href );
-  }, 5000);
+  console.log('TOD add mention to db')
 }
 
-function containsTarget( source ) {
-  
-  
+function containsTarget( bodyText, targetURL ) {
+  return true;
 }
 
 fastify.listen( 3000, function ( err, address ) {
