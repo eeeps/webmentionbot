@@ -11,7 +11,8 @@ fastify.register( fastifyFormbody );
 
 import url from 'url';
 import fetch from 'node-fetch'
-
+import jsdom from 'jsdom';
+const { JSDOM } = jsdom;
 
 // receive posts
 
@@ -112,14 +113,17 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples
-  // doing a simple regex would universal across content types and is quite simple
+  // doing a simple regex instead would universal across content types and is quite simple
   // biggest flaw is that it includes substrings
   // e.g., target=https://ericportis.com would match a target document containing
   //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
   // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
   
   if ( new RegExp( 'text\/html', 'i' ).test( contentType ) ) {
-    console.log('html!')
+    const { document } = ( new JSDOM( bodyText ) ).window;
+    const anchor = document.querySelector( `a[href='${ targetURL }']` );
+    console.log( { anchor, type: typeof anchor, p: Object.getPrototypeOf(anchor) === HTMLAnchorElement } )
+    return anchor !== null;
   }
   
   return ( new RegExp( targetURL )).test( bodyText );
