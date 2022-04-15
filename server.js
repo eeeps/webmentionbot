@@ -96,7 +96,16 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   	redirect: 'follow',
 	  follow: 20
   } );
+  
+  if ( response.status !== 200 ) {
+    console.log( 'source URL returned a staus code other than 200' )
+    return;
+  }
+  
+  console.log( containsLink( response, targetURL ) )
+  
   const dom = new JSDOM( await response.text() );
+  //  The source document must have an exact match of the target URL provided in order for it to be considered a valid Webmention.
   const linkToTarget = dom.window.document.querySelector(`a[href='${targetURL.href}//']`);  
   
   setTimeout(function () {
@@ -104,6 +113,10 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   }, 5000);
 }
 
+function containsTarget( source ) {
+  
+  
+}
 
 fastify.listen( 3000, function ( err, address ) {
   if ( err ) {
