@@ -11,8 +11,6 @@ fastify.register( fastifyFormbody );
 
 import url from 'url';
 import fetch from 'node-fetch'
-import jsdom from "jsdom";
-const { JSDOM } = jsdom;
 
 
 // receive posts
@@ -39,7 +37,7 @@ fastify.post( '/', ( req, reply ) => {
     sourceURL = new URL( req.body.source );
     targetURL = new URL( req.body.target );
   } catch {
-    reply.code( 400 ).send( "source and target must be valid URLs" );
+    reply.code( 400 ).send( "Source and target URLs must be valid URLs." );
     return;
   }
   
@@ -49,20 +47,20 @@ fastify.post( '/', ( req, reply ) => {
   const acceptableProtocols = [ 'http:', 'https:' ]
   if ( !acceptableProtocols.includes( sourceURL.protocol ) || 
        !acceptableProtocols.includes( targetURL.protocol ) ) {
-    reply.code( 400 ).send( "Source and target must be HTTP: or HTTPS:" );
+    reply.code( 400 ).send( "Source and target URLs must use the HTTP or HTTPS protocols." );
     return;
   }
   
   // The receiver must reject the request if the source URL is the same as the target URL.
   if ( sourceURL.href === targetURL.href ) {
-    reply.code( 400 ).send( "source and target must not be the same" );
+    reply.code( 400 ).send( "Specified source and target URLs must not be the same." );
     return;
   }
   
   // The receiver should check that target is a valid resource for which it can accept Webmentions.
   // This check should happen synchronously to reject invalid Webmentions before more in-depth verification begins.
   if ( targetURL.hostname !== 'ericportis.com' ) {
-    reply.code( 400 ).send( "target must be on ericportis.com" );
+    reply.code( 400 ).send( 'Specified target URL does not accept Webmentions (from this endpoint, at least).' );
     return;
   }
   
@@ -98,22 +96,24 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   } );
   
   if ( response.status !== 200 ) {
-    console.log( 'source URL returned a staus code other than 200' )
+    console.log( 'Source URL not found.' )
     return;
   }
   
   const bodyText = await response.text();
   
-  if ( !containsTarget( bodyText, targetURL ) ) {
-    console.log( 'source URL did not mention target' )
+  if ( !mentionsTarget( bodyText, targetURL ) ) {
+    console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
   
-  console.log('TOD add mention to db')
+  console.log('TODO add mention to db')
 }
 
-function containsTarget( bodyText, targetURL ) {
-  return true;
+function mentionsTarget( bodyText, targetURL ) {
+  // spec says you MAY do per-content-type processing, lists some examples
+  // but this seems universal and is quite simple
+  return ( new RegExp( targetURL )).test( bodyText );
 }
 
 fastify.listen( 3000, function ( err, address ) {
