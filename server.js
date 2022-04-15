@@ -64,15 +64,14 @@ fastify.post( '/', ( req, reply ) => {
     reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
     return;
   }
-  
-  // TODO I shuold probably check against some list of valid URLs?
+  // TODO I shuold probably also check against some list of valid URLs?
   
   // ...and then should queue and process the request asynchronously, to prevent DoS attacks.
   
   reply
     .code( 202 )
     .send( { sourceURL, targetURL } )
-    .then( () => { processValidWebmentionRequest( { sourceURL, targetURL } )}, () => {} );
+    .then( () => { processValidWebmentionRequest( { sourceURL, targetURL } ) }, () => {} );
   
 } );
 
@@ -105,12 +104,12 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   
   const bodyText = await response.text();
   
-  if ( !mentionsTarget( bodyText, targetURL, response.headers.get('content-type') ) ) {
+  if ( !mentionsTarget( bodyText, targetURL.href, response.headers.get( 'content-type' ) ) ) {
     console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
-  
-  console.log('TODO add mention to db')
+  console.log('Verified!')  
+  console.log('TODO additional parsing? and add mention to db')
 }
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
