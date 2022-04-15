@@ -115,26 +115,30 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples
-  // doing a simple regex instead would universal across content types and is quite simple
-  // biggest flaw is that it includes substrings
+  // doing a simple regex instead is universal across content types and quite simple
+  // BUT, it matches too many things
   // e.g., target=https://ericportis.com would match a target document containing
   //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
-  // so I guess we'll do a whole JSDOM thing for things it can parse, and fallback to regex for other content types... for now
+  // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
   
-  const htmlContentTypes = [
-    /text\/html/i,
-    /application\/xhtml\+xml/i
-  ];
-  const isHTML = htmlContentTypes.reduce( ( acc, cv ) => {
-    
-  } );
-  if ( new RegExp( 'text\/html', 'i' ).test( contentType ) ) {
-    const { document } = ( new JSDOM( bodyText ) ).window;
+  
+  if ( isHTMLish( contentType ) ) {
+    const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
     const anchor = document.querySelector( `a[href='${ targetURL }']` );
     return anchor && anchor.nodeName && anchor.nodeName === 'A';
   }
   
   return ( new RegExp( targetURL )).test( bodyText );
+}
+
+function isHTMLish( contentType ) {
+  const htmlishContentTypes = [
+    /text\/html/i,
+    /application\/xhtml\+xml/i
+  ];
+  return htmlishContentTypes.reduce( ( acc, cv ) => {
+    return acc || cv.test( contentType );
+  }, false );
 }
 
 fastify.listen( 3000, function ( err, address ) {
