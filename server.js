@@ -1,14 +1,15 @@
 
 // fastify
-const fastify = require( 'fastify' )( {
-  logger: true,
-//  trustProxy: true // needed to get ips...
-} );
+import Fastify from 'fastify'
+const fastify = Fastify({
+  logger: true
+})
 
-const url = require( 'url' );
-
+import fastifyFormbody from 'fastify-formbody';
 // handle posts with formbodys
-fastify.register( require( 'fastify-formbody' ) );
+fastify.register( fastifyFormbody );
+
+import url from 'url';
 
 
 // receive posts
