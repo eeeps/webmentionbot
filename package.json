@@ -3,15 +3,15 @@
   "version": "0.0.1",
   "description": "listen for post requests and add them to a log",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify-formbody": "^5.2.0",
-    "node-fetch": "^3.2.3"
+    "fastify-formbody": "^5.2.0"
   },
   "engines": {
-    "node": "14.x"
+    "node": "16.x"
   },
   "license": "MIT",
   "keywords": [
@@ -20,7 +20,6 @@
   ],
   "devDependencies": {
     "fastify": "^3.27.2",
-    "fastify-static": "^4.5.0",
-    "jsdom": "^19.0.0"
+    "fastify-static": "^4.5.0"
   }
 }
