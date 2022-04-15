@@ -61,7 +61,7 @@ fastify.post( '/', ( req, reply ) => {
   // The receiver should check that target is a valid resource for which it can accept Webmentions.
   // This check should happen synchronously to reject invalid Webmentions before more in-depth verification begins.
   if ( targetURL.hostname !== 'ericportis.com' ) {
-    reply.code( 400 ).send( 'Specified target URL does not accept Webmentions (from this endpoint, at least).' );
+    reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
     return;
   }
   
@@ -119,8 +119,15 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
   // biggest flaw is that it includes substrings
   // e.g., target=https://ericportis.com would match a target document containing
   //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
-  // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
+  // so I guess we'll do a whole JSDOM thing for things it can parse, and fallback to regex for other content types... for now
   
+  const htmlContentTypes = [
+    /text\/html/i,
+    /application\/xhtml\+xml/i
+  ];
+  const isHTML = htmlContentTypes.reduce( ( acc, cv ) => {
+    
+  } );
   if ( new RegExp( 'text\/html', 'i' ).test( contentType ) ) {
     const { document } = ( new JSDOM( bodyText ) ).window;
     const anchor = document.querySelector( `a[href='${ targetURL }']` );
