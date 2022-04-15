@@ -91,6 +91,7 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   
   const response = await fetch( sourceURL.href );
   const dom = new JSDOM( response.body );
+  console.log({ l: dom.window.document.querySelector(`body`).innerHTML })
   console.log( dom.window.document.querySelector(`a[href='${targetURL.href}']`) )
   
   // The receiver should include an HTTP Accept header indicating its preference of content types that are acceptable.
