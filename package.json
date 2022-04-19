@@ -1,7 +1,7 @@
 {
-  "name": "basic-listener",
+  "name": "webmention-endpoint",
   "version": "0.0.1",
-  "description": "listen for post requests and add them to a log",
+  "description": "webmention endpoing",
   "main": "server.js",
   "type": "module",
   "scripts": {
