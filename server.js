@@ -14,6 +14,13 @@ import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 
+import pg from 'pg';
+const { Client } = pg;
+const connectionString = process.env.DATABASE_URL;
+console.log( process.env.DATABASE_URL );
+
+
+
 // receive posts
 
 fastify.post( '/', ( req, reply ) => {
@@ -109,8 +116,34 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
     return;
   }
   console.log('Verified!')  
-  console.log('TODO additional parsing? and add mention to db')
+  
+  await storeMention( sourceURL.href, targetURL.href );
+  // await getMentions();
+  
 }
+
+async function getMentions() {
+  const client = new Client( { connectionString } );
+  client.connect();
+  const res = await client.query( 'SELECT * FROM mentions' );
+  console.log(res.rows);
+}
+
+async function storeMention( source, target ) {
+  const client = new Client( { connectionString } );
+  client.connect();
+  const text = 'INSERT INTO mentions(source, target) VALUES($1, $2) RETURNING *';
+  const values = [ source, target ];
+  
+  // async/await
+  try {
+    const res = await client.query( text, values );
+    console.log( res.rows[ 0 ] );
+  } catch ( err ) {
+    console.log( err.stack );
+  }
+}
+
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples

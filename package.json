@@ -10,8 +10,9 @@
   "dependencies": {
     "fastify": "^3.28.0",
     "fastify-formbody": "^5.2.0",
+    "jsdom": "^19.0.0",
     "node-fetch": "^3.2.3",
-    "jsdom": "^19.0.0"
+    "pg": "^8.7.3"
   },
   "engines": {
     "node": "16.x"
@@ -20,6 +21,5 @@
   "keywords": [
     "node",
     "glitch"
-  ],
-  "devDependencies": {}
+  ]
 }
