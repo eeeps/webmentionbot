@@ -115,7 +115,7 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
     console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
-  console.log('Verified!')  
+  console.log('Verified! Storing webmention...')  
   
   await storeMention( sourceURL.href, targetURL.href );
   // await getMentions();
@@ -130,24 +130,27 @@ async function getMentions() {
 }
 
 async function storeMention( source, target ) {
+
   const client = new Client( { connectionString } );
   client.connect();
+
   const text = `
 INSERT INTO mentions (source, target)
 VALUES ($1, $2) 
 ON CONFLICT ON CONSTRAINT unique_pairs
 DO 
-   UPDATE SET modified = CURRENT_TIMESTAMP;
+   UPDATE SET modified = CURRENT_TIMESTAMP
+RETURNING *;
 `;
   const values = [ source, target ];
   
-  // async/await
   try {
     const res = await client.query( text, values );
     console.log( res.rows[ 0 ] );
   } catch ( err ) {
     console.log( err.stack );
   }
+
 }
 
 
