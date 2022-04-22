@@ -132,7 +132,13 @@ async function getMentions() {
 async function storeMention( source, target ) {
   const client = new Client( { connectionString } );
   client.connect();
-  const text = 'INSERT INTO mentions(source, target) VALUES($1, $2) RETURNING *';
+  const text = `
+INSERT INTO mentions (source, target)
+VALUES ($1, $2) 
+ON CONFLICT ON CONSTRAINT unique_pairs
+DO 
+   UPDATE SET modified = CURRENT_TIMESTAMP;
+`;
   const values = [ source, target ];
   
   // async/await
