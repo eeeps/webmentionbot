@@ -16,8 +16,6 @@ const { JSDOM } = jsdom;
 
 import pg from 'pg';
 const { Client } = pg;
-const connectionString = process.env.DATABASE_URL;
-console.log( process.env.DATABASE_URL );
 
 
 
@@ -131,7 +129,15 @@ async function getMentions() {
 
 async function storeMention( source, target ) {
 
-  const client = new Client( { connectionString } );
+  const dbConfig = {
+    connectionString: process.env.DATABASE_URL
+  };
+  if ( !( /^postgresql\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
+    // no ssl locally
+    dbConfig.ssl = { rejectUnauthorized: false };
+  }
+
+  const client = new Client( dbConfig );
   client.connect();
 
   const text = `
