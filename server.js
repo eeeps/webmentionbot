@@ -120,15 +120,19 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
   
 }
 
-async function getMentions() {
-  const client = new Client( { connectionString } );
-  client.connect();
-  const res = await client.query( 'SELECT * FROM mentions' );
-  console.log(res.rows);
-}
+// endpoint to get mentions
 
-async function storeMention( source, target ) {
+fastify.get( '/', async ( req, reply ) => {
+  const query = req.query;
+  if ( !query.target ) {
+    reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
+    return;
+  }
+  const response = await getMentions( query.target );
+  reply.send( response );
+} );
 
+function dbClient() {
   const dbConfig = {
     connectionString: process.env.DATABASE_URL
   };
@@ -136,8 +140,21 @@ async function storeMention( source, target ) {
     // no ssl locally
     dbConfig.ssl = { rejectUnauthorized: false };
   }
+  return( new Client( dbConfig ) );
+}
 
-  const client = new Client( dbConfig );
+async function getMentions( target ) {
+  const client = dbClient();
+  client.connect();
+  const text = 'SELECT * FROM mentions WHERE target = $1';
+  const values = [ target ];
+  const res = await client.query( text, values );
+  return res.rows;
+}
+
+async function storeMention( source, target ) {
+
+  const client = dbClient();
   client.connect();
 
   const text = `
