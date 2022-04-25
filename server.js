@@ -136,7 +136,7 @@ function dbClient() {
   const dbConfig = {
     connectionString: process.env.DATABASE_URL
   };
-  if ( !( /^postgresql\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
+  if ( !( /^postgresq?l?\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
     // no ssl locally
     dbConfig.ssl = { rejectUnauthorized: false };
   }
