@@ -14,6 +14,27 @@ import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 
+
+// 3.1 Sending Webmentions
+const sendWebmention = ( fromURL, toURL ) => {
+  
+  // 3.1.2 Sender discovers receiver Webmention endpoint
+  // The sender must fetch the target URL (and follow redirects)
+  // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
+   
+  const toResponse = await fetch( toURL.href, {
+    headers: {
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+    },
+  	redirect: 'follow',
+	  follow: 20
+  } );
+  
+  toResponse.headers.get('link');
+  
+}
+
+
 // receive posts
 
 fastify.post( '/', ( req, reply ) => {
