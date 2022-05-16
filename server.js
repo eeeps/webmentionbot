@@ -31,7 +31,9 @@ const sendWebmention = ( fromURL, toURL ) => {
   } );
   
   const links = toResponse.headers.get('link').split(', ');
-  links.filter( l => /rel='"/.test( l ) )
+  httpWebmentionURLs = links
+    .filter( l => /rel="?webmention/.test( l ) );
+    .map( l => l.match( /<?([^>]*)>(.*)/ ) );
   
 }
 
