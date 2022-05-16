@@ -30,7 +30,8 @@ const sendWebmention = ( fromURL, toURL ) => {
 	  follow: 20
   } );
   
-  toResponse.headers.get('link').split(', ');
+  const links = toResponse.headers.get('link').split(', ');
+  links.filter( l => l.match( /rel=["']?preconnect["']?")
   
 }
 
