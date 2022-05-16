@@ -31,7 +31,7 @@ const sendWebmention = ( fromURL, toURL ) => {
   } );
   
   const links = toResponse.headers.get('link').split(', ');
-  links.filter( l => l.match( /rel=["']?preconnect["']?")
+  links.filter( l => /rel='"/.test( l ) )
   
 }
 
