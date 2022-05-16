@@ -30,7 +30,7 @@ const sendWebmention = ( fromURL, toURL ) => {
 	  follow: 20
   } );
   
-  toResponse.headers.get('link');
+  toResponse.headers.get('link').split(', ');
   
 }
 
