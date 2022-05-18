@@ -39,7 +39,7 @@ const sendWebmention = async ( fromURL, toURL ) => {
   if ( linkHeader ) {
     parsedLinks = li.parse( linkHeader );
     if ( parsedLinks.webmention ) {
-      endpoints.push( parsedLinks.webmention );
+      endpoints.unshift( parsedLinks.webmention );
     }
   }
   
