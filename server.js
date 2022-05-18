@@ -13,10 +13,11 @@ import url from 'url';
 import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
+import li from 'li';
 
 
 // 3.1 Sending Webmentions
-const sendWebmention = ( fromURL, toURL ) => {
+const sendWebmention = async ( fromURL, toURL ) => {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
   // The sender must fetch the target URL (and follow redirects)
