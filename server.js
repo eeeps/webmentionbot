@@ -21,8 +21,9 @@ const sendWebmention = async ( fromURL, toURL ) => {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
   // The sender must fetch the target URL (and follow redirects)
-  // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
    
+  let endpoints = [];
+  
   const toResponse = await fetch( toURL.href, {
     headers: {
       'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
@@ -31,10 +32,16 @@ const sendWebmention = async ( fromURL, toURL ) => {
 	  follow: 20
   } );
   
-  const links = toResponse.headers.get('link').split(', ');
-  httpWebmentionURLs = links
-    .filter( l => /rel="?webmention/.test( l ) );
-    .map( l => l.match( /<?([^>]*)>(.*)/ ) );
+  // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
+  
+  const linkHeader = toResponse.headers.get('link');
+  let parsedLinks;
+  if ( linkHeader ) {
+    parsedLinks = li.parse( linkHeader );
+    if ( parsedLinks.webmention ) {
+      endpoints.push( parsedLinks.webmention );
+    }
+  }
   
 }
 
