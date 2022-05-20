@@ -15,12 +15,40 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 
+
+async function lookForEndpointsInHeaders( response ) {
+  
+  const linkHeader = response.headers.get( 'link' );
+  if ( linkHeader ) {
+    const parsedLinks = li.parse( linkHeader );
+    if ( parsedLinks && parsedLinks.webmention ) {
+      return parsedLinks.webmention;
+    }
+  }
+  return null;
+
+}
+
+async function lookForEndpointsInHTML( response ) {
+  
+}
+
 async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
   
   let endpoints = [];
   fetchOptions.method = "HEAD";
   
-  await fetch( toURL.href, fetchOptions );
+  const response = await fetch( toURL.href, fetchOptions );
+  
+const linkHeader = toResponse.headers.get('link');
+  let parsedLinks;
+  if ( linkHeader ) {
+    parsedLinks = li.parse( linkHeader );
+    if ( parsedLinks.webmention ) {
+      endpoints.unshift( parsedLinks.webmention );
+    }
+  }
+  
   
   return endpoints;
 }
@@ -59,33 +87,7 @@ async function discoverEndpoint( toURL ) {
 }
 
 // 3.1 Sending Webmentions
-const sendWebmention = async ( fromURL, toURL ) => {
-  
-  
 
-   
-  let endpoints = [];
-  
-  const toResponse = await fetch( toURL.href, {
-    headers: {
-      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
-    },
-  	redirect: 'follow',
-	  follow: 20
-  } );
-  
-
-  
-  const linkHeader = toResponse.headers.get('link');
-  let parsedLinks;
-  if ( linkHeader ) {
-    parsedLinks = li.parse( linkHeader );
-    if ( parsedLinks.webmention ) {
-      endpoints.unshift( parsedLinks.webmention );
-    }
-  }
-  
-}
 
 
 // receive posts
