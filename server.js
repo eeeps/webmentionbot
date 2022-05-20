@@ -17,12 +17,15 @@ import li from 'li';
 
 async function discoverEndpointsFromLinkHeaders( toURL ) {
   
-  let endpoints = [];
+  let endpoints = [],
+      getResponse;
   
-  return endpoints;
+  return { endpoints, getResponse };
 }
 
 async function discoverEndpointsFromHTML( toURL ) {
+  
+  // The sender must fetch the target URL (and follow redirects)
   
   let endpoints = [];
   
@@ -31,25 +34,22 @@ async function discoverEndpointsFromHTML( toURL ) {
 
 async function discoverEndpoint( toURL ) {
   
-  const endpointsInLinkHeaders = discoverEndpointsFromLinkHeaders( toURL );
+  // 3.1.2 Sender discovers receiver Webmention endpoint
+  
+  const { endpointsInLinkHeaders, getResponse } = discoverEndpointsFromLinkHeaders( toURL );
   if ( endpointsInLinkHeaders.length > 0 ) {
      return endpointsInLinkHeaders[ 0 ];
   } else {
-    
+    return endpointsFromHTML[ 0 ];
   }
-  
-  
-  
-  
-  return endpoints[ 0 ];
   
 }
 
 // 3.1 Sending Webmentions
 const sendWebmention = async ( fromURL, toURL ) => {
   
-  // 3.1.2 Sender discovers receiver Webmention endpoint
-  // The sender must fetch the target URL (and follow redirects)
+  
+
    
   let endpoints = [];
   
