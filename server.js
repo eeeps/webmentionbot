@@ -15,15 +15,14 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 
-async function discoverEndpointsFromLinkHeaders( toURL ) {
+async function lookForEndpointsUsingHeadRequest( toURL ) {
   
-  let endpoints = [],
-      getResponse;
+  let endpoints = [];
   
-  return { endpoints, getResponse };
+  return endpoints;
 }
 
-async function discoverEndpointsFromHTML( toURL ) {
+async function lookForEndpointsUsingGetRequest( toURL ) {
   
   // The sender must fetch the target URL (and follow redirects)
   
@@ -36,11 +35,14 @@ async function discoverEndpoint( toURL ) {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
   
-  const { endpointsInLinkHeaders, getResponse } = discoverEndpointsFromLinkHeaders( toURL );
-  if ( endpointsInLinkHeaders.length > 0 ) {
-     return endpointsInLinkHeaders[ 0 ];
+  // Senders may initially make an HTTP HEAD request [RFC7231] 
+  // to check for the Link header before making a GET request.
+  
+  const endpointsFromHeadRequest = lookForEndpointsUsingHeadRequest( toURL );
+  if ( endpointsFromHeadRequest[ 0 ] ) {
+     return endpointsFromHeadRequest[ 0 ];
   } else {
-    return endpointsFromHTML[ 0 ];
+    return lookForEndpointsUsingGetRequest()[ 0 ];
   }
   
 }
@@ -61,7 +63,7 @@ const sendWebmention = async ( fromURL, toURL ) => {
 	  follow: 20
   } );
   
-  // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
+
   
   const linkHeader = toResponse.headers.get('link');
   let parsedLinks;
