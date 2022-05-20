@@ -15,6 +15,35 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 
+async function discoverEndpointsFromLinkHeaders( toURL ) {
+  
+  let endpoints = [];
+  
+  return endpoints;
+}
+
+async function discoverEndpointsFromHTML( toURL ) {
+  
+  let endpoints = [];
+  
+  return endpoints;
+}
+
+async function discoverEndpoint( toURL ) {
+  
+  const endpointsInLinkHeaders = discoverEndpointsFromLinkHeaders( toURL );
+  if ( endpointsInLinkHeaders.length > 0 ) {
+     return endpointsInLinkHeaders[ 0 ];
+  } else {
+    
+  }
+  
+  
+  
+  
+  return endpoints[ 0 ];
+  
+}
 
 // 3.1 Sending Webmentions
 const sendWebmention = async ( fromURL, toURL ) => {
