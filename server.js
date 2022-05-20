@@ -39,6 +39,8 @@ async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
   fetchOptions.method = "HEAD";
   
   const response = await fetch( toURL.href, fetchOptions );
+  return lookForEndpointsInHeaders( response );
+}
   
 const linkHeader = toResponse.headers.get('link');
   let parsedLinks;
