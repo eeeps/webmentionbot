@@ -15,14 +15,17 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 
-async function lookForEndpointsUsingHeadRequest( toURL ) {
+async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
   
   let endpoints = [];
+  fetchOptions.method = "HEAD";
+  
+  await fetch( toURL.href, fetchOptions );
   
   return endpoints;
 }
 
-async function lookForEndpointsUsingGetRequest( toURL ) {
+async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
   
@@ -35,14 +38,22 @@ async function discoverEndpoint( toURL ) {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
   
+  const fetchOptions = {
+    headers: {
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+    },
+  	redirect: 'follow',
+	  follow: 20
+  };
+  
   // Senders may initially make an HTTP HEAD request [RFC7231] 
   // to check for the Link header before making a GET request.
   
-  const endpointsFromHeadRequest = lookForEndpointsUsingHeadRequest( toURL );
+  const endpointsFromHeadRequest = lookForEndpointsUsingHeadRequest( toURL, fetchOptions );
   if ( endpointsFromHeadRequest[ 0 ] ) {
      return endpointsFromHeadRequest[ 0 ];
   } else {
-    return lookForEndpointsUsingGetRequest()[ 0 ];
+    return lookForEndpointsUsingGetRequest( toURL, fetchOptions )[ 0 ];
   }
   
 }
