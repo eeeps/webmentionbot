@@ -20,8 +20,8 @@ async function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' );
   if ( linkHeader ) {
-    const parsedLinks = li.parse( linkHeader );
-    if ( parsedLinks && parsedLinks.webmention ) {
+    const parsedLinks = li.parse( linkHeader ); // 
+    if ( parsedLinks.webmention ) {
       return parsedLinks.webmention;
     }
   }
