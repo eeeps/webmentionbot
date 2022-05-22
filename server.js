@@ -16,12 +16,17 @@ const { JSDOM } = jsdom;
 import li from 'li';
 
 
-async function lookForEndpointsInHeaders( response ) {
+const responseCache = new Map();
+
+
+function lookForEndpointsInHeaders( response ) {
   
-  const linkHeader = response.headers.get( 'link' );
-  if ( linkHeader ) {
-    const parsedLinks = li.parse( linkHeader ); // 
-    if ( parsedLinks.webmention ) {
+  const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
+  if ( linkHeader ) { 
+    const parsedLinks = li.parse( linkHeader ); // returns an empty object if parsing finds no valid links.
+                                                // and... parse() accepts null as input!
+                                                // but keep the if check above for readability.
+    if ( parsedLinks.webmention ) { 
       return parsedLinks.webmention;
     }
   }
@@ -30,6 +35,8 @@ async function lookForEndpointsInHeaders( response ) {
 }
 
 async function lookForEndpointsInHTML( response ) {
+  
+  const link
   
 }
 
