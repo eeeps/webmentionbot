@@ -16,8 +16,6 @@ const { JSDOM } = jsdom;
 import li from 'li';
 
 
-const responseCache = new Map();
-
 
 function lookForEndpointsInHeaders( response ) {
   
@@ -25,7 +23,7 @@ function lookForEndpointsInHeaders( response ) {
   if ( linkHeader ) { 
     const parsedLinks = li.parse( linkHeader ); // returns an empty object if parsing finds no valid links.
                                                 // and... parse() accepts null as input!
-                                                // but keep the if check above for readability.
+                                                // but keep the if check above for readability, I guess
     if ( parsedLinks.webmention ) { 
       return parsedLinks.webmention;
     }
@@ -36,7 +34,7 @@ function lookForEndpointsInHeaders( response ) {
 
 async function lookForEndpointsInHTML( response ) {
   
-  const link
+  const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
   
 }
 
