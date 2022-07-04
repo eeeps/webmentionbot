@@ -149,6 +149,7 @@ async function getMentions( target ) {
   const text = 'SELECT * FROM mentions WHERE target = $1';
   const values = [ target ];
   const res = await client.query( text, values );
+  client.end();
   return res.rows;
 }
 
@@ -173,6 +174,8 @@ RETURNING *;
   } catch ( err ) {
     console.log( err.stack );
   }
+  
+  client.end();
 
 }
 
