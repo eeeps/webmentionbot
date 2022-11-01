@@ -35,6 +35,7 @@ function lookForEndpointsInHeaders( response ) {
 async function lookForEndpointsInHTML( response ) {
   
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
+  // TODO stuff with the document
   
 }
 
@@ -45,19 +46,6 @@ async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
   
   const response = await fetch( toURL.href, fetchOptions );
   return lookForEndpointsInHeaders( response );
-}
-  
-const linkHeader = toResponse.headers.get('link');
-  let parsedLinks;
-  if ( linkHeader ) {
-    parsedLinks = li.parse( linkHeader );
-    if ( parsedLinks.webmention ) {
-      endpoints.unshift( parsedLinks.webmention );
-    }
-  }
-  
-  
-  return endpoints;
 }
 
 async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
