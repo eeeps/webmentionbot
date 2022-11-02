@@ -72,7 +72,9 @@ async function discoverEndpoint( toURL ) {
   // Senders may initially make an HTTP HEAD request [RFC7231] 
   // to check for the Link header before making a GET request.
   
-  const endpointsFromHeadRequest = lookForEndpointsUsingHeadRequest( toURL, fetchOptions );
+  console.log('right before endpointsFromHeadRequest');
+  const endpointsFromHeadRequest = await lookForEndpointsUsingHeadRequest( toURL, fetchOptions );
+  console.log('right after endpointsFromHeadRequest',endpointsFromHeadRequest );
   if ( endpointsFromHeadRequest[ 0 ] ) {
      return endpointsFromHeadRequest[ 0 ];
   } else {
