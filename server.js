@@ -83,7 +83,16 @@ async function discoverEndpoint( toURL ) {
 
 // 3.1 Sending Webmentions
 
-
+fastify.post( '/sendfrom', ( req, reply ) => {
+  
+  if ( !( req.body.source && req.body.target ) ) {
+    reply
+      .code( 400 )
+      .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
+    return;
+  }
+  
+}
 
 // receive posts
 
