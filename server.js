@@ -85,10 +85,10 @@ async function discoverEndpoint( toURL ) {
 
 fastify.post( '/sendfrom', ( req, reply ) => {
   
-  if ( !( req.body.source && req.body.target ) ) {
+  if ( !( req.body.source ) ) {
     reply
       .code( 400 )
-      .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
+      .send( "POST request must contain x-www-form-urlencoded `source` parameter" );
     return;
   }
   
