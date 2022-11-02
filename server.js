@@ -75,7 +75,7 @@ async function discoverEndpoint( toURL ) {
   console.log('right before endpointsFromHeadRequest');
   const endpointsFromHeadRequest = await lookForEndpointsUsingHeadRequest( toURL, fetchOptions );
   console.log('right after endpointsFromHeadRequest',endpointsFromHeadRequest );
-  if ( endpointsFromHeadRequest[ 0 ] ) {
+  if ( endpointsFromHeadRequest && endpointsFromHeadRequest[ 0 ] ) {
      return endpointsFromHeadRequest[ 0 ];
   } else {
     return lookForEndpointsUsingGetRequest( toURL, fetchOptions )[ 0 ];
