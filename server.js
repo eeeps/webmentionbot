@@ -20,6 +20,7 @@ import li from 'li';
 function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
+                                                     // concats multiple headers into a comma separated string
   if ( linkHeader ) { 
     const parsedLinks = li.parse( linkHeader ); // returns an empty object if parsing finds no valid links.
                                                 // and... parse() accepts null as input!
