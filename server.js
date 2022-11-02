@@ -92,7 +92,7 @@ fastify.post( '/sendfrom', ( req, reply ) => {
     return;
   }
   
-}
+} );
 
 // receive posts
 
