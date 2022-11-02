@@ -36,7 +36,7 @@ async function lookForEndpointsInHTML( response ) {
   
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
   // TODO stuff with the document
-  
+  return "TODO";
 }
 
 async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
@@ -54,7 +54,7 @@ async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
   
   let endpoints = [];
   
-  return endpoints;
+  return "TODO";
 }
 
 async function discoverEndpoint( toURL ) {
@@ -92,9 +92,11 @@ fastify.post( '/send', async ( req, reply ) => {
     return;
   }
   
+  const endpoint = await discoverEndpoint( req.body.target );
+  
   reply
     .code( 200 )
-    .send( await discoverEndpoint( target ) );
+    .send( endpoint );
   
 } );
 
