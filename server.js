@@ -22,13 +22,13 @@ function lookForEndpointsInHeaders( response ) {
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
                                                      // concats multiple headers into a comma separated string
   if ( linkHeader ) { 
-    const parsedLinks = li.parse( linkHeader ); // returns an empty object if parsing finds no valid links.
-                                                // and... parse() accepts null as input!
-                                                // but keep the if check above for readability, I guess
-    if ( parsedLinks.webmention ) { 
-      return parsedLinks.webmention;
-    }
+    const parsedLinks = li.parse( linkHeader, { extended: true } ); // returns an empty array if parsing finds no valid links.
+	  const webmentionEndpoints = parsedLinks
+		  .filter( l => l.link && l.rel && l.rel.includes( 'webmention' ) )
+		  .map( l => l.link );
+    return webmentionEndpoints;
   }
+  
   return null;
 
 }
@@ -42,11 +42,10 @@ async function lookForEndpointsInHTML( response ) {
 
 async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
   
-  let endpoints = [];
   fetchOptions.method = "HEAD";
-  
   const response = await fetch( toURL.href, fetchOptions );
   return lookForEndpointsInHeaders( response );
+  
 }
 
 async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
