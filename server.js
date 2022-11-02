@@ -91,8 +91,19 @@ fastify.post( '/send', async ( req, reply ) => {
       .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
     return;
   }
+  let sourceURL, targetURL;
+  try {
+    sourceURL = new URL( req.body.source );
+    targetURL = new URL( req.body.target );
+  } catch {
+    reply.code( 400 ).send( "Source and target URLs must be valid URLs." );
+    return;
+  }
   
-  const endpoint = await discoverEndpoint( req.body.target );
+  
+  console.log('right before discoverEndpoint');
+  const endpoint = await discoverEndpoint( targetURL );
+  console.log( 'right after discoverEndpoint', endpoint );
   
   reply
     .code( 200 )
