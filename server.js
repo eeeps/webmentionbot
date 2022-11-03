@@ -36,9 +36,12 @@ function lookForEndpointsInHeaders( response ) {
 async function lookForEndpointsInHTML( response ) {
   
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
-  // TODO stuff with the document
-  const linkEls = [ ...document.querySelectorAll( 'link[rel=webmention]' ) ];
-  if linkEls 
+
+  const hrefs = [ ...document.querySelectorAll( 'link[rel=webmention], a[rel=webmention]' ) ]
+    .map( d => d.getAttribute( 'href' ) )
+    .filter( d => !!d );
+  return hrefs[ 0 ];
+  
   
 }
 
@@ -58,6 +61,10 @@ async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
   if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
     return endpointsInHeaders[ 0 ];
   }
+  
+  //  If the content type of the document is HTML,
+  // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
+  
   const endpointsInHTML = lookForEndpointsInHTML( response );
     if ( endpointsInHTML && endpointsInHTML[ 0 ] ) {
     return endpointsInHTML[ 0 ];
