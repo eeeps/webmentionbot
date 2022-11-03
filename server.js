@@ -21,6 +21,7 @@ function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
                                                      // concats multiple headers into a comma separated string
+  console.log(linkHeader)
   if ( linkHeader ) { 
     const parsedLinks = li.parse( linkHeader, { extended: true } ); // returns an empty array if parsing finds no valid links.
 	  const webmentionEndpoints = parsedLinks
@@ -38,7 +39,7 @@ async function lookForEndpointsInHTML( response, contentType ) {
   const bodyText = await response.text();
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
 
-  return [ ...document.querySelectorAll( "link[rel='webmention']" ) ]
+  return [ ...document.querySelectorAll( "link[rel='webmention'], a[rel='webmention']" ) ]
     .map( d => d.getAttribute( 'href' ) )
     .filter( d => !!d );
   
@@ -49,7 +50,11 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   const fetchOpts = JSON.parse(JSON.stringify( fetchOptions ));
   fetchOpts.method = "HEAD";
   const response = await fetch( toURL.href, fetchOpts );
-  return lookForEndpointInHeaders( response );
+  const endpoints = lookForEndpointsInHeaders( response );
+  if ( endpoints && endpoints[ 0 ] ) {
+    return endpoints[ 0 ];
+  }
+  return null;
   
 }
 
@@ -57,6 +62,8 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
+  
+  // TODO handle non-200 cases informatively
   
   // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
   const endpointsInHeaders = lookForEndpointsInHeaders( response );
