@@ -29,7 +29,7 @@ function lookForEndpointsInHeaders( response ) {
     return webmentionEndpoints;
   }
   
-  return null;
+  return [];
 
 }
 
@@ -37,28 +37,23 @@ async function lookForEndpointsInHTML( response, contentType ) {
   
   const bodyText = await response.text();
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
-  console.log(document.querySelectorAll(''));
-  const hrefsA = [ ...document.querySelectorAll( "link[rel='webmention']" ) ]
-  console.log('hrefs', hrefsA);
-  const hrefs = hrefsA.map( d => d.getAttribute( 'href' ) )
+
+  return [ ...document.querySelectorAll( "link[rel='webmention']" ) ]
+    .map( d => d.getAttribute( 'href' ) )
     .filter( d => !!d );
   
-  // If more than one of these is present,
-  // the first HTTP Link header takes precedence,
-  // followed by the first <link> or <a> element in document order. 
-  return hrefs[ 0 ];
+}
+
+async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
+  
+  const fetchOpts = JSON.parse(JSON.stringify( fetchOptions ));
+  fetchOpts.method = "HEAD";
+  const response = await fetch( toURL.href, fetchOpts );
+  return lookForEndpointInHeaders( response );
   
 }
 
-async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
-  
-  fetchOptions.method = "HEAD";
-  const response = await fetch( toURL.href, fetchOptions );
-  return lookForEndpointsInHeaders( response );
-  
-}
-
-async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
+async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
@@ -98,19 +93,19 @@ async function discoverEndpoint( toURL ) {
   // Senders may initially make an HTTP HEAD request [RFC7231] 
   // to check for the Link header before making a GET request.
   
-  console.log('right before endpointsFromHeadRequest');
-  const endpointsFromHeadRequest = await lookForEndpointsUsingHeadRequest( toURL, fetchOptions );
-  console.log('right after endpointsFromHeadRequest',endpointsFromHeadRequest );
-  if ( endpointsFromHeadRequest && endpointsFromHeadRequest[ 0 ] ) {
-     return endpointsFromHeadRequest[ 0 ];
+  console.log('right before endpointFromHeadRequest');
+  const endpointFromHeadRequest = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
+  console.log('right after endpointFromHeadRequest',endpointFromHeadRequest );
+  if ( endpointFromHeadRequest ) {
+     return endpointFromHeadRequest;
   }
   
   // The sender must fetch the target URL... (con't in function)
-  console.log('right before endpointsFromGetRequest');
-  const endpointsFromGetRequest = await lookForEndpointsUsingGetRequest( toURL, fetchOptions );
-  console.log('right after endpointsFromGetRequest');
-  if ( endpointsFromGetRequest && endpointsFromGetRequest[ 0 ] ) {
-    return endpointsFromGetRequest[ 0 ];
+  console.log('right before endpointFromGetRequest');
+  const endpointFromGetRequest = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
+  console.log('right after endpointFromGetRequest');
+  if ( endpointFromGetRequest  ) {
+    return endpointFromGetRequest;
   }
   
   return null;
