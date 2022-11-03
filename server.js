@@ -37,7 +37,9 @@ async function lookForEndpointsInHTML( response ) {
   
   const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
   // TODO stuff with the document
-  return "TODO";
+  const linkEls = [ ...document.querySelectorAll( 'link[rel=webmention]' ) ];
+  if linkEls 
+  
 }
 
 async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
@@ -51,10 +53,17 @@ async function lookForEndpointsUsingHeadRequest( toURL, fetchOptions ) {
 async function lookForEndpointsUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
+  const response = await fetch( toURL.href, fetchOptions );
+  const endpointsInHeaders = lookForEndpointsInHeaders( response );
+  if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
+    return endpointsInHeaders[ 0 ];
+  }
+  const endpointsInHTML = lookForEndpointsInHTML( response );
+    if ( endpointsInHTML && endpointsInHTML[ 0 ] ) {
+    return endpointsInHTML[ 0 ];
+  }
+  return null;
   
-  let endpoints = [];
-  
-  return "TODO";
 }
 
 async function discoverEndpoint( toURL ) {
@@ -78,8 +87,15 @@ async function discoverEndpoint( toURL ) {
   if ( endpointsFromHeadRequest && endpointsFromHeadRequest[ 0 ] ) {
      return endpointsFromHeadRequest[ 0 ];
   } else {
-    return lookForEndpointsUsingGetRequest( toURL, fetchOptions )[ 0 ];
+    console.log('right before endpointsFromGetRequest');
+    const endpointsFromGetRequest = await lookForEndpointsUsingGetRequest( toURL, fetchOptions )[ 0 ]
+    console.log('right after endpointsFromGetRequest');
+    if ( endpointsFromGetRequest && endpointsFromGetRequest[ 0 ] ) {
+      return endpointsFromGetRequest[ 0 ];
+    }
   }
+  
+  return null;
   
 }
 
