@@ -63,7 +63,9 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
   
-  // Handle non-200 cases informatively
+  // TODO Handle non-200 cases informatively
+  // TODO make this a custom error type, check for it, and catch it
+  // respond with 400 rather than killing the program
   if (response.status < 200 || response.status > 299) {
     throw response.status ;
   }
