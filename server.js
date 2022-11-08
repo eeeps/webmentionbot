@@ -63,7 +63,10 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
   
-  // TODO handle non-200 cases informatively
+  // Handle non-200 cases informatively
+  if (response.status < 200 || response.status > 299) {
+    throw response.status ;
+  }
   
   // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
   const endpointsInHeaders = lookForEndpointsInHeaders( response );
