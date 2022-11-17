@@ -16,7 +16,7 @@ const { JSDOM } = jsdom;
 import li from 'li';
 
 
-
+// returns [ "https://...", "https://...", ... ]
 function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
@@ -34,6 +34,7 @@ function lookForEndpointsInHeaders( response ) {
 
 }
 
+// returns [ "https://...", "https://...", ... ]
 async function lookForEndpointsInHTML( response, contentType ) {
   
   const bodyText = await response.text();
@@ -45,7 +46,7 @@ async function lookForEndpointsInHTML( response, contentType ) {
   
 }
 
-// returns { status: 200, ok: true, endpoint: [...] }
+// returns { status: 200, ok: true, endpoint: "https://..." }
 async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
   // deep copy...
@@ -128,7 +129,7 @@ async function discoverEndpoint( toURL ) {
   const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
   console.log( 'right after endpointFromHeadRequest' );
   if ( h.ok && h.endpoint ) {
-     return h.endpoint;
+     return h;
   }
   
   // The sender must fetch the target URL... (con't in function)
@@ -160,12 +161,18 @@ fastify.post( '/send', async ( req, reply ) => {
   
   
   console.log('right before discoverEndpoint');
-  const endpoint = await discoverEndpoint( targetURL );
+  const { status, ok, endpoint } = await discoverEndpoint( targetURL );
   console.log( 'right after discoverEndpoint', endpoint );
   
-  reply
-    .code( 200 )
-    .send( endpoint );
+  if ( ok ) {
+    reply
+      .code( 200 )
+      .send( endpoint );
+  } else {
+    reply
+      .code( 400 )
+  }
+  
   
 } );
 
