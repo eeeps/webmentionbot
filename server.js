@@ -56,7 +56,7 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   const response = await fetch( toURL.href, fetchOpts );
   
   const result = {
-    ok
+    ok: response.ok,
     status: response.status,
     endpoint: null
   };
@@ -126,18 +126,19 @@ async function discoverEndpoint( toURL ) {
   console.log('right before endpointFromHeadRequest');
   const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
   console.log('right after endpointFromHeadRequest',endpointFromHeadRequest );
-  if ( h.status >=  ) {
-     return endpointFromHeadRequest;
+  if ( h.ok ) {
+     return h.endpoint;
   }
   
   // The sender must fetch the target URL... (con't in function)
   console.log('right before endpointFromGetRequest');
-  const endpointFromGetRequest = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
+  const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
   console.log('right after endpointFromGetRequest');
-  if ( endpointFromGetRequest  ) {
-    return endpointFromGetRequest;
+  if ( g.ok  ) {
+    return g.endpoint;
   }
   
+  // TODO how do we want to report non-200 statuses?
   return null;
   
 }
