@@ -54,13 +54,18 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   fetchOpts.method = "HEAD";
   
   const response = await fetch( toURL.href, fetchOpts );
-  const result = { 
+  
+  const result = {
+    ok
     status: response.status,
     endpoint: null
   };
   
   if ( response.ok ) {
-    result.endpoint = lookForEndpointsInHeaders( response );
+    const endpoints = lookForEndpointsInHeaders( response );
+    if ( endpoints && endpoints[ 0 ] ) {
+      result.endpoint = endpoints[ 0 ];
+    }
   }
   
   return result;
@@ -73,9 +78,10 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
   
-  const result = { 
+  const result = {
+    ok: response.ok,
     status: response.status,
-    endpoints: []
+    endpoint: null
   };
   
   if (response.ok) {
@@ -118,9 +124,9 @@ async function discoverEndpoint( toURL ) {
   // to check for the Link header before making a GET request.
   
   console.log('right before endpointFromHeadRequest');
-  const endpointFromHeadRequest = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
+  const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
   console.log('right after endpointFromHeadRequest',endpointFromHeadRequest );
-  if ( endpointFromHeadRequest ) {
+  if ( h.status >=  ) {
      return endpointFromHeadRequest;
   }
   
