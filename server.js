@@ -45,7 +45,7 @@ async function lookForEndpointsInHTML( response, contentType ) {
   
 }
 
-// returns { status: 200, endpoint: [...] }
+// returns { status: 200, ok: true, endpoint: [...] }
 async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
   // deep copy...
@@ -72,7 +72,7 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
 }
 
-// returns { status: 200, endpoint: "https://..." }
+// returns { status: 200, ok: true, endpoint: "https://..." }
 async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
@@ -108,6 +108,7 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
 }
 
+// {}
 async function discoverEndpoint( toURL ) {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
@@ -134,12 +135,7 @@ async function discoverEndpoint( toURL ) {
   console.log( 'right before endpointFromGetRequest' );
   const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
   console.log( 'right after endpointFromGetRequest' );
-  if ( g.ok ) {
-    return g.endpoint; // returns null if 2xx and we found nothing
-  }
-  
-  // TODO how do we want to report non-200 statuses?
-  return g.status;
+  return g
   
 }
 
