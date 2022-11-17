@@ -123,17 +123,17 @@ async function discoverEndpoint( toURL ) {
   // Senders may initially make an HTTP HEAD request [RFC7231] 
   // to check for the Link header before making a GET request.
   
-  console.log('right before endpointFromHeadRequest');
+  console.log( 'right before endpointFromHeadRequest' );
   const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
-  console.log('right after endpointFromHeadRequest',endpointFromHeadRequest );
+  console.log( 'right after endpointFromHeadRequest' );
   if ( h.ok ) {
      return h.endpoint;
   }
   
   // The sender must fetch the target URL... (con't in function)
-  console.log('right before endpointFromGetRequest');
+  console.log( 'right before endpointFromGetRequest' );
   const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
-  console.log('right after endpointFromGetRequest');
+  console.log( 'right after endpointFromGetRequest' );
   if ( g.ok  ) {
     return g.endpoint;
   }
