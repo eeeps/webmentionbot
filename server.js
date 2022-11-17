@@ -167,7 +167,7 @@ fastify.post( '/send', async ( req, reply ) => {
   // console.log( 'right after discoverEndpoint', endpoint );
   
   if ( ok ) {
-    // TODO send the webmention to endpoint...
+    // TODO send the webmention to the discovered endpoint...
     reply
       .code( 200 )
       .send( endpoint );
