@@ -84,32 +84,33 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
     status: response.status,
     endpoint: null
   };
-  
-  if (response.ok) {
+    
+  if ( response.ok ) {
    
     // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
     const endpointsInHeaders = lookForEndpointsInHeaders( response );
     if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
-      return endpointsInHeaders[ 0 ];
+      result.endpoint = endpointsInHeaders[ 0 ];
+      
+    } else {
+
+      //  If the content type of the document is HTML,
+      // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
+      const contentType = response.headers.get( 'content-type' );
+      if ( contentType && isHTMLish( contentType ) ) {
+        const endpointsInHTML = await lookForEndpointsInHTML( response, contentType );
+        result.endpoint = endpointsInHTML[ 0 ];
+      }
+      
     }
 
-    //  If the content type of the document is HTML,
-    // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
-    const contentType = response.headers.get( 'content-type' );
-    if ( contentType && isHTMLish( contentType ) ) {
-      const endpointsInHTML = await lookForEndpointsInHTML( response, contentType );
-        if ( endpointsInHTML && endpointsInHTML[ 0 ] ) {
-        return endpointsInHTML[ 0 ];
-      }
-    }
-    
   }
     
   return result;
   
 }
 
-// {}
+// returns { status: 200, ok: true, endpoint: "https://..." }
 async function discoverEndpoint( toURL ) {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
@@ -171,6 +172,7 @@ fastify.post( '/send', async ( req, reply ) => {
   } else {
     reply
       .code( 400 )
+      .send( `Tried to GET ${ targetURL } but the server responded with HTTP ${ status }` )
   }
   
   
