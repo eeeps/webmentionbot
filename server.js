@@ -45,19 +45,33 @@ async function lookForEndpointsInHTML( response, contentType ) {
   
 }
 
+// returns { status: 200, endpoints: [...] }
 async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
+  // deep copy...
   const fetchOpts = JSON.parse(JSON.stringify( fetchOptions ));
+  // change method
   fetchOpts.method = "HEAD";
+  
   const response = await fetch( toURL.href, fetchOpts );
+  const result = { 
+    status: response.status,
+    endpoints: []
+  };
+  
+  if ( result.status > 200 && result.status <= 299 ) {
+    
+  }
   const endpoints = lookForEndpointsInHeaders( response );
   if ( endpoints && endpoints[ 0 ] ) {
     return endpoints[ 0 ];
   }
-  return null;
+  
+  return response;
   
 }
 
+// returns { status: 200, endpoints: [...] }
 async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
