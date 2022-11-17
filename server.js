@@ -21,7 +21,7 @@ function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
                                                      // concats multiple headers into a comma separated string
-  console.log(linkHeader)
+  // console.log(linkHeader)
   if ( linkHeader ) { 
     const parsedLinks = li.parse( linkHeader, { extended: true } ); // returns an empty array if parsing finds no valid links.
 	  const webmentionEndpoints = parsedLinks
@@ -45,7 +45,7 @@ async function lookForEndpointsInHTML( response, contentType ) {
   
 }
 
-// returns { status: 200, endpoints: [...] }
+// returns { status: 200, endpoint: [...] }
 async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
   // deep copy...
@@ -56,47 +56,49 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   const response = await fetch( toURL.href, fetchOpts );
   const result = { 
     status: response.status,
-    endpoints: []
+    endpoint: null
   };
   
-  if ( result.status > 200 && result.status <= 299 ) {
-    result.endpoints = lookForEndpointsInHeaders( response );
+  if ( response.ok ) {
+    result.endpoint = lookForEndpointsInHeaders( response );
   }
   
-  return response;
+  return result;
   
 }
 
-// returns { status: 200, endpoints: [...] }
+// returns { status: 200, endpoint: "https://..." }
 async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
   // The sender must fetch the target URL (and follow redirects)
   const response = await fetch( toURL.href, fetchOptions );
   
-  // TODO Handle non-200 cases informatively
-  // TODO make this a custom error type, check for it, and catch it
-  // respond with 400 rather than killing the program
-  if (response.status < 200 || response.status > 299) {
-    throw response.status ;
-  }
+  const result = { 
+    status: response.status,
+    endpoints: []
+  };
   
-  // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
-  const endpointsInHeaders = lookForEndpointsInHeaders( response );
-  if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
-    return endpointsInHeaders[ 0 ];
-  }
-  
-  //  If the content type of the document is HTML,
-  // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
-  const contentType = response.headers.get( 'content-type' );
-  if ( contentType && isHTMLish( contentType ) ) {
-    const endpointsInHTML = await lookForEndpointsInHTML( response, contentType );
-      if ( endpointsInHTML && endpointsInHTML[ 0 ] ) {
-      return endpointsInHTML[ 0 ];
+  if (response.ok) {
+   
+    // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
+    const endpointsInHeaders = lookForEndpointsInHeaders( response );
+    if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
+      return endpointsInHeaders[ 0 ];
     }
+
+    //  If the content type of the document is HTML,
+    // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
+    const contentType = response.headers.get( 'content-type' );
+    if ( contentType && isHTMLish( contentType ) ) {
+      const endpointsInHTML = await lookForEndpointsInHTML( response, contentType );
+        if ( endpointsInHTML && endpointsInHTML[ 0 ] ) {
+        return endpointsInHTML[ 0 ];
+      }
+    }
+    
   }
     
-  return null;
+  return result;
   
 }
 
