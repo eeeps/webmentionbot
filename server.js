@@ -60,11 +60,7 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   };
   
   if ( result.status > 200 && result.status <= 299 ) {
-    
-  }
-  const endpoints = lookForEndpointsInHeaders( response );
-  if ( endpoints && endpoints[ 0 ] ) {
-    return endpoints[ 0 ];
+    result.endpoints = lookForEndpointsInHeaders( response );
   }
   
   return response;
