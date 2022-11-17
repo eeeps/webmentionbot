@@ -90,6 +90,7 @@ async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
     // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
     const endpointsInHeaders = lookForEndpointsInHeaders( response );
     if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
+      
       result.endpoint = endpointsInHeaders[ 0 ];
       
     } else {
@@ -126,17 +127,17 @@ async function discoverEndpoint( toURL ) {
   // Senders may initially make an HTTP HEAD request [RFC7231] 
   // to check for the Link header before making a GET request.
   
-  console.log( 'right before endpointFromHeadRequest' );
+  // console.log( 'right before endpointFromHeadRequest' );
   const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
-  console.log( 'right after endpointFromHeadRequest' );
+  // console.log( 'right after endpointFromHeadRequest' );
   if ( h.ok && h.endpoint ) {
      return h;
   }
   
   // The sender must fetch the target URL... (con't in function)
-  console.log( 'right before endpointFromGetRequest' );
+  // console.log( 'right before endpointFromGetRequest' );
   const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
-  console.log( 'right after endpointFromGetRequest' );
+  // console.log( 'right after endpointFromGetRequest' );
   return g
   
 }
@@ -161,11 +162,12 @@ fastify.post( '/send', async ( req, reply ) => {
   }
   
   
-  console.log('right before discoverEndpoint');
+  // console.log('right before discoverEndpoint');
   const { status, ok, endpoint } = await discoverEndpoint( targetURL );
-  console.log( 'right after discoverEndpoint', endpoint );
+  // console.log( 'right after discoverEndpoint', endpoint );
   
   if ( ok ) {
+    // TODO send the webmention to endpoint...
     reply
       .code( 200 )
       .send( endpoint );
@@ -174,7 +176,6 @@ fastify.post( '/send', async ( req, reply ) => {
       .code( 400 )
       .send( `Tried to GET ${ targetURL } but the server responded with HTTP ${ status }` )
   }
-  
   
 } );
 
