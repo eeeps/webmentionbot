@@ -124,7 +124,7 @@ async function discoverEndpoint( toURL ) {
   const fetchOptions = {
     headers: {
       'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8', // TODO this is browsers' for navigation requests. add json? text?
-      'User-Agent': 'Webmention-endpoint-discoverer/0.1 node-fetch' // TODO final name?
+      'User-Agent': 'Webmentioner/0.1 node' // TODO final name?
     },
   	redirect: 'follow',
 	  follow: 20
@@ -139,7 +139,7 @@ async function discoverEndpoint( toURL ) {
   if ( h.ok && h.endpoint ) {
      return h;
   }
-  
+    
   // The sender must fetch the target URL... (con't in function)
   // console.log( 'right before endpointFromGetRequest' );
   const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
@@ -148,16 +148,39 @@ async function discoverEndpoint( toURL ) {
   
 }
 
+async function sendWebmention( sourceURL, targetURL, endpointURL ) {
+
+  // 3.1.3 Sender notifies receiver
+  //
+  // The sender must post x-www-form-urlencoded [HTML5] source and target parameters
+  // to the Webmention endpoint, where source is the URL of the sender's page
+  // containing a link, and target is the URL of the page being linked to.
+
+  const response = await fetch( endpointURL.href, {
+    headers: {
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+    },
+  	redirect: 'follow',
+	  follow: 20
+  } );
+
+}
+
+
 // 3.1 Sending Webmentions
 
 fastify.post( '/send', async ( req, reply ) => {
   
+  // validate incoming request
+  
+  // we need a source and target...
   if ( !( req.body.source && req.body.target ) ) {
     reply
       .code( 400 )
       .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
     return;
   }
+  // ...and they need to be valid URLs
   let sourceURL, targetURL;
   try {
     sourceURL = new URL( req.body.source );
@@ -169,22 +192,26 @@ fastify.post( '/send', async ( req, reply ) => {
   
   
   // console.log('right before discoverEndpoint');
-  const { status, ok, endpoint } = await discoverEndpoint( targetURL );
+  const discovered = await discoverEndpoint( targetURL );
   // console.log( 'right after discoverEndpoint', endpoint );
   
-  if ( ok ) {
-    // TODO send the webmention to the discovered endpoint...
-    
-    const 
-    
-    reply
-      .code( 200 )
-      .send( endpoint );
-  } else {
+  if ( !discovered.ok ) {
     reply
       .code( 400 )
-      .send( `Tried to GET ${ targetURL } but the server responded with HTTP ${ status }` )
+      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
+      return;
   }
+  const targetURL = new URL( req.body.target );
+  } catch {
+    reply.code( 400 ).send( "Source and target URLs must be valid URLs." );
+  
+    
+  const wmResponse = sendWebmention( sourceURL, targetURL, discovered.enpoint );
+  
+  // TODO remove this (log instead)
+  reply
+    .code( 200 )
+    .send( discovered.endpoint );
   
 } );
 
