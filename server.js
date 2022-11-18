@@ -167,9 +167,14 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
     },
   	redirect: 'follow', // needed?
 	  follow: 20,
-    body: formBody //TODO
+    body: formBody
   } );
 
+  if ( resposne.ok ) {
+    // ...
+  } else {
+    // ...
+  }
 }
 
 
