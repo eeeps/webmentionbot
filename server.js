@@ -170,7 +170,7 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
     body: formBody
   } );
 
-  if ( resposne.ok ) {
+  if ( response.ok ) {
     // ...
   } else {
     // ...
