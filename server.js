@@ -156,12 +156,18 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
   // to the Webmention endpoint, where source is the URL of the sender's page
   // containing a link, and target is the URL of the page being linked to.
 
+  const formBody = new URLSearchParams();
+  formBody.set( 'source', sourceURL.href );
+  formBody.set( 'target', targetURL.href );
+  
   const response = await fetch( endpointURL.href, {
+    method: 'POST',
     headers: {
-      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
-  	redirect: 'follow',
-	  follow: 20
+  	redirect: 'follow', // needed?
+	  follow: 20,
+    body: formBody //TODO
   } );
 
 }
@@ -201,12 +207,13 @@ fastify.post( '/send', async ( req, reply ) => {
       .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
       return;
   }
-  const targetURL = new URL( req.body.target );
+  try {
+    const endpointURL = new URL( discovered.endpoint );
   } catch {
-    reply.code( 400 ).send( "Source and target URLs must be valid URLs." );
-  
+    reply.code( 400 ).send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+  }
     
-  const wmResponse = sendWebmention( sourceURL, targetURL, discovered.enpoint );
+  const wmResponse = sendWebmention( sourceURL, targetURL, endpointURL );
   
   // TODO remove this (log instead)
   reply
