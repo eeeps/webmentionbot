@@ -73,6 +73,7 @@ async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
   
 }
 
+// TODO? feels pretty repetetive...
 // returns { status: 200, ok: true, endpoint: "https://..." }
 async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
   
@@ -116,9 +117,14 @@ async function discoverEndpoint( toURL ) {
   
   // 3.1.2 Sender discovers receiver Webmention endpoint
   
+  // Senders may customize the HTTP User Agent [RFC7231]
+  // used when fetching the target URL in order to indicate to the recipient
+  // that this request is made as part of Webmention discovery.
+  // In this case, it is recommended to include the string "Webmention" in the User Agent.
   const fetchOptions = {
     headers: {
-      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8' // TODO this is browsers' for navigation requests. add json? text?
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8', // TODO this is browsers' for navigation requests. add json? text?
+      'User-Agent': 'Webmention-endpoint-discoverer/0.1 node-fetch' // TODO final name?
     },
   	redirect: 'follow',
 	  follow: 20
@@ -168,6 +174,9 @@ fastify.post( '/send', async ( req, reply ) => {
   
   if ( ok ) {
     // TODO send the webmention to the discovered endpoint...
+    
+    const 
+    
     reply
       .code( 200 )
       .send( endpoint );
