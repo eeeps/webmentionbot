@@ -175,7 +175,7 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
   return {
     status: response.status,
     ok: response.ok,
-    body: response.body
+    body: await response.text()
   };
 
 }
