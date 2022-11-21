@@ -231,7 +231,7 @@ fastify.post( '/send', async ( req, reply ) => {
   } else {
     reply
       .code( 400 )
-      .send( `` );
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }` );
   }
 } );
 
