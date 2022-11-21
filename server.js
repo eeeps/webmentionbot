@@ -224,11 +224,15 @@ fastify.post( '/send', async ( req, reply ) => {
     
   const wmResponse = sendWebmention( sourceURL, targetURL, endpointURL );
   
-  // TODO remove this (log instead)
-  reply
-    .code( 200 )
-    .send( discovered.endpoint );
-  
+  if ( wmResponse.ok ) {
+    reply
+      .code( 200 )
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention.` );
+  } else {
+    reply
+      .code( 400 )
+      .send( `` );
+  }
 } );
 
 // receive posts
