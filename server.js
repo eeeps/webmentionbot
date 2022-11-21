@@ -148,6 +148,7 @@ async function discoverEndpoint( toURL ) {
   
 }
 
+// returns { status: 200, ok: true, body: "Yay!" }
 async function sendWebmention( sourceURL, targetURL, endpointURL ) {
 
   // 3.1.3 Sender notifies receiver
@@ -170,12 +171,13 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
 	  follow: 20,
     body: formBody
   } );
+  
+  return {
+    status: response.status,
+    ok: response.ok,
+    body: response.body
+  };
 
-  if ( response.ok ) {
-    // ...
-  } else {
-    // ...
-  }
 }
 
 
@@ -213,6 +215,12 @@ fastify.post( '/send', async ( req, reply ) => {
       .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
       return;
   }
+  if ( !discovered.endpoint ) {
+    reply
+      .code( 400 )
+      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` )
+      return;
+  }
   let endpointURL;
   try {
     endpointURL = new URL( discovered.endpoint );
@@ -223,16 +231,18 @@ fastify.post( '/send', async ( req, reply ) => {
     return;
   }
     
-  const wmResponse = sendWebmention( sourceURL, targetURL, endpointURL );
+  const wmResponse = await sendWebmention( sourceURL, targetURL, endpointURL );
   
   if ( wmResponse.ok ) {
     reply
       .code( 200 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention.` );
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
+${ wmResponse.body }` );
   } else {
     reply
       .code( 400 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }` );
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
+${ wmResponse.body }` );
   }
 } );
 
