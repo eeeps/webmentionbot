@@ -124,7 +124,7 @@ async function discoverEndpoint( toURL ) {
   const fetchOptions = {
     headers: {
       'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8', // TODO this is browsers' for navigation requests. add json? text?
-      'User-Agent': 'Webmentioner/0.1 node' // TODO final name?
+      'User-Agent': 'Webmentioner/0.1 node-fetch'
     },
   	redirect: 'follow',
 	  follow: 20
@@ -163,6 +163,7 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
   const response = await fetch( endpointURL.href, {
     method: 'POST',
     headers: {
+      'User-Agent': 'Webmentioner/0.1 node-fetch',
       'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
     },
   	redirect: 'follow', // needed?
