@@ -212,10 +212,14 @@ fastify.post( '/send', async ( req, reply ) => {
       .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
       return;
   }
+  let endpointURL;
   try {
-    const endpointURL = new URL( discovered.endpoint );
+    endpointURL = new URL( discovered.endpoint );
   } catch {
-    reply.code( 400 ).send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+    reply
+      .code( 400 )
+      .send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+    return;
   }
     
   const wmResponse = sendWebmention( sourceURL, targetURL, endpointURL );
