@@ -5,6 +5,8 @@ const fastify = Fastify({
   logger: true
 });
 
+
+
 import fastifyFormbody from 'fastify-formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
