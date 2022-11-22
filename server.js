@@ -7,7 +7,7 @@ const fastify = Fastify({
 
 
 
-import fastifyFormbody from 'fastify-formbody';
+import fastifyFormbody from '@fastify/formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
 
@@ -375,7 +375,7 @@ function isHTMLish( contentType ) {
   }, false );
 }
 
-fastify.listen( 3000, function ( err, address ) {
+fastify.listen( { port: 3000 }, function ( err, address ) {
   if ( err ) {
     fastify.log.error( err );
     process.exit( 1 );
