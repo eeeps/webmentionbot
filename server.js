@@ -29,9 +29,9 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(
-      "CREATE TABLE Received (id INTEGER PRIMARY KEY AUTOINCREMENT, dream TEXT)"
+      "CREATE TABLE Received (id INTEGER PRIMARY KEY AUTOINCREMENT, source TEXT, target TEXT)"
     );
-    console.log("New table Dreams created!");
+    console.log("New table Received created!");
   }
 });
 
@@ -383,17 +383,6 @@ fastify.get( '/', async ( req, reply ) => {
   const response = await getMentions( query.target );
   reply.send( response );
 } );
-
-function dbClient() {
-  const dbConfig = {
-    connectionString: process.env.DATABASE_URL
-  };
-  if ( !( /^postgresq?l?\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
-    // no ssl locally
-    dbConfig.ssl = { rejectUnauthorized: false };
-  }
-  return( new Client( dbConfig ) );
-}
 
 async function getMentions( target ) {
   const client = dbClient();
