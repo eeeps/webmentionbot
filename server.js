@@ -17,6 +17,24 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 
+import fs from 'fs';
+import sqlite3 from 'sqlite3';
+sqlite3.verbose();
+
+const dbFile = "./.data/sqlite.db";
+const exists = fs.existsSync(dbFile);
+const db = new sqlite3.Database(dbFile);
+
+// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+db.serialize(() => {
+  if (!exists) {
+    db.run(
+      "CREATE TABLE Received (id INTEGER PRIMARY KEY AUTOINCREMENT, dream TEXT)"
+    );
+    console.log("New table Dreams created!");
+  }
+});
+
 
 // returns [ "https://...", "https://...", ... ]
 function lookForEndpointsInHeaders( response ) {
