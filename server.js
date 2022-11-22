@@ -248,6 +248,8 @@ ${ wmResponse.body }` );
   }
 } );
 
+
+
 // receive posts
 
 fastify.post( '/', ( req, reply ) => {
@@ -342,9 +344,75 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
     console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
-  console.log('Verified!')  
-  console.log('TODO additional parsing? and add mention to db')
+
+  console.log('Verified! Storing webmention...')  
+  
+  await storeMention( sourceURL.href, targetURL.href );
+  // await getMentions();
+  
 }
+
+
+
+// endpoint to get mentions
+
+fastify.get( '/', async ( req, reply ) => {
+  const query = req.query;
+  if ( !query.target ) {
+    reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
+    return;
+  }
+  const response = await getMentions( query.target );
+  reply.send( response );
+} );
+
+function dbClient() {
+  const dbConfig = {
+    connectionString: process.env.DATABASE_URL
+  };
+  if ( !( /^postgresq?l?\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
+    // no ssl locally
+    dbConfig.ssl = { rejectUnauthorized: false };
+  }
+  return( new Client( dbConfig ) );
+}
+
+async function getMentions( target ) {
+  const client = dbClient();
+  client.connect();
+  const text = 'SELECT * FROM mentions WHERE target = $1';
+  const values = [ target ];
+  const res = await client.query( text, values );
+  client.end();
+  return res.rows;
+}
+
+async function storeMention( source, target ) {
+
+  const client = dbClient();
+  client.connect();
+
+  const text = `
+INSERT INTO mentions (source, target)
+VALUES ($1, $2) 
+ON CONFLICT ON CONSTRAINT unique_pairs
+DO 
+   UPDATE SET modified = CURRENT_TIMESTAMP
+RETURNING *;
+`;
+  const values = [ source, target ];
+  
+  try {
+    const res = await client.query( text, values );
+    console.log( res.rows[ 0 ] );
+  } catch ( err ) {
+    console.log( err.stack );
+  }
+  
+  client.end();
+
+}
+
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples
