@@ -33,10 +33,10 @@ CREATE TABLE "Received" (
 "id" INTEGER PRIMARY KEY AUTOINCREMENT,
 "source" TEXT NOT NULL,
 "target" TEXT NOT NULL,
-"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
-"modified" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+"created" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+"modified" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CONSTRAINT "unique_pairs" UNIQUE ("source", "target")
 );
-
     `);
     console.log("New table Received created!");
   }
@@ -403,17 +403,22 @@ async function getMentions( target ) {
 
 async function storeMention( source, target ) {
 
-  const client = dbClient();
-  client.connect();
-
-  const text = `
+  db.serialize( () => {
+    
+    const statement = db.prepare(`
 INSERT INTO mentions (source, target)
-VALUES ($1, $2) 
+VALUES ($source, $target) 
 ON CONFLICT ON CONSTRAINT unique_pairs
 DO 
    UPDATE SET modified = CURRENT_TIMESTAMP
 RETURNING *;
-`;
+`, {
+      $source: source,
+      
+    });
+    
+  } );
+
   const values = [ source, target ];
   
   try {
