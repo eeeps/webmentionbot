@@ -372,11 +372,20 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 
   console.log('Verified! Storing webmention...')  
   
-  await storeMention( sourceURL.href, targetURL.href );
+  storeMention( sourceURL.href, targetURL.href );
   // await getMentions();
   
 }
 
+// for testing only!
+fastify.post( '/storeMention', async ( req, reply ) => {
+  const sourceURL = new URL( req.body.source ),
+        targetURL = new URL( req.body.target );
+  storeMention( sourceURL.href, targetURL.href );
+  reply
+    .code(200)
+    .send('hi')
+} );
 
 
 // endpoint to get mentions
@@ -401,17 +410,15 @@ async function getMentions( target ) {
   return res.rows;
 }
 
-async function storeMention( source, target ) {
+function storeMention( source, target ) {
 
   db.serialize( () => {
     
     const statement = db.prepare(`
-INSERT INTO mentions (source, target)
+UPSERT INTO mentions (source, target)
 VALUES (?, ?) 
-ON CONFLICT ON CONSTRAINT unique_pairs
-DO 
-   UPDATE SET modified = CURRENT_TIMESTAMP
-RETURNING *;
+ON CONFLICT(unique_pairs) DO 
+   UPDATE SET modified = CURRENT_TIMESTAMP;
 `, [ source, target ]
     );
     
