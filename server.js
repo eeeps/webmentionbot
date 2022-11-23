@@ -415,7 +415,7 @@ function storeMention( source, target ) {
   db.serialize( () => {
     
     const statement = db.prepare(`
-UPSERT INTO mentions (source, target)
+INSERT INTO mentions (source, target)
 VALUES (?, ?) 
 ON CONFLICT(unique_pairs) DO 
    UPDATE SET modified = CURRENT_TIMESTAMP;
