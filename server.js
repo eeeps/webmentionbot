@@ -407,28 +407,18 @@ async function storeMention( source, target ) {
     
     const statement = db.prepare(`
 INSERT INTO mentions (source, target)
-VALUES ($source, $target) 
+VALUES (?, ?) 
 ON CONFLICT ON CONSTRAINT unique_pairs
 DO 
    UPDATE SET modified = CURRENT_TIMESTAMP
 RETURNING *;
-`, {
-      $source: source,
-      
-    });
+`, [ source, target ]
+    );
+    
+    statement.run();
+    statement.finalize();
     
   } );
-
-  const values = [ source, target ];
-  
-  try {
-    const res = await client.query( text, values );
-    console.log( res.rows[ 0 ] );
-  } catch ( err ) {
-    console.log( err.stack );
-  }
-  
-  client.end();
 
 }
 
