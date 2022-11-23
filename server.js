@@ -29,13 +29,14 @@ const db = new sqlite3.Database(dbFile);
 db.serialize(() => {
   if (!exists) {
     db.run(`
-      CREATE TABLE Received (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        source TEXT CHECK ,
-        target TEXT,
-        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
+CREATE TABLE "Received" (
+"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+"source" TEXT NOT NULL,
+"target" TEXT NOT NULL,
+"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+"modified" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
     `);
     console.log("New table Received created!");
   }
