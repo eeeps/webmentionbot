@@ -28,9 +28,15 @@ const db = new sqlite3.Database(dbFile);
 // if ./.data/sqlite.db does not exist, create it, otherwise print records to console
 db.serialize(() => {
   if (!exists) {
-    db.run(
-      "CREATE TABLE Received (id INTEGER PRIMARY KEY AUTOINCREMENT, source TEXT, target TEXT)"
-    );
+    db.run(`
+      CREATE TABLE Received (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        source TEXT CHECK ,
+        target TEXT,
+        created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
     console.log("New table Received created!");
   }
 });
