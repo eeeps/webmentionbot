@@ -417,7 +417,7 @@ function storeMention( source, target ) {
     const statement = db.prepare(`
 INSERT INTO mentions (source, target)
 VALUES (?, ?) 
-ON CONFLICT(unique_pairs) DO 
+ON CONFLICT DO 
    UPDATE SET modified = CURRENT_TIMESTAMP;
 `, [ source, target ]
     );
