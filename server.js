@@ -33,8 +33,7 @@ CREATE TABLE "Received" (
 "id" INTEGER PRIMARY KEY AUTOINCREMENT,
 "source" TEXT NOT NULL,
 "target" TEXT NOT NULL,
-"created" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"modified" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+"created" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
     `);
     console.log("New table Received created!");
@@ -414,7 +413,7 @@ function storeMention( source, target ) {
   db.serialize( () => {
     
     const statement = db.prepare(`
-INSERT INTO mentions (source, target)
+INSERT INTO Received (source, target)
 VALUES (?, ?);
 `, [ source, target ]
     );
