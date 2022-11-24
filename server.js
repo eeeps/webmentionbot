@@ -394,23 +394,24 @@ fastify.get( '/', async ( req, reply ) => {
     reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
     return;
   }
-  const response = await getMentions( query.target );
+  const response = getMentions( query.target );
   reply.send( response );
 } );
 
-async function getMentions( target ) {
+function getMentions( target ) {
+  
   const statement = db.prepare( `
 SELECT
   source,
   target,
-  MAX(created)
+  MAX(created) AS created
 FROM Received
 WHERE target = ?
 GROUP BY
   source,
   target;
 `, [ target ] );
-  return statement.run();
+  statement.all( (err, rows) => { console.log(rows) } );
   // statement.finalize(); // ?
   
 }
