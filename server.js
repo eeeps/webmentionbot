@@ -399,13 +399,20 @@ fastify.get( '/', async ( req, reply ) => {
 } );
 
 async function getMentions( target ) {
-  const client = dbClient();
-  client.connect();
-  const text = 'SELECT * FROM mentions WHERE target = $1';
-  const values = [ target ];
-  const res = await client.query( text, values );
-  client.end();
-  return res.rows;
+  const statement = db.prepare( `
+SELECT
+  source,
+  target,
+  MAX(created)
+FROM Received
+WHERE target = ?
+GROUP BY
+  source,
+  target;
+`, [ target ] );
+  return statement.run();
+  // statement.finalize(); // ?
+  
 }
 
 function storeMention( source, target ) {
