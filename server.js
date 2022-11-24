@@ -34,8 +34,7 @@ CREATE TABLE "Received" (
 "source" TEXT NOT NULL,
 "target" TEXT NOT NULL,
 "created" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-"modified" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-CONSTRAINT "unique_pairs" UNIQUE ("source", "target")
+"modified" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
     `);
     console.log("New table Received created!");
@@ -416,9 +415,7 @@ function storeMention( source, target ) {
     
     const statement = db.prepare(`
 INSERT INTO mentions (source, target)
-VALUES (?, ?) 
-ON CONFLICT DO 
-   UPDATE SET modified = CURRENT_TIMESTAMP;
+VALUES (?, ?);
 `, [ source, target ]
     );
     
