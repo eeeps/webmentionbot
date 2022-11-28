@@ -30,13 +30,54 @@ db.serialize(() => {
   if (!exists) {
     db.run(`
 CREATE TABLE "Received" (
-"id" INTEGER PRIMARY KEY AUTOINCREMENT,
+"id" INTEGER PRIMARY KEY,
 "source" TEXT NOT NULL,
 "target" TEXT NOT NULL,
-"created" TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+"is_gone" INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE VIEW Mentions AS 
+	WITH distinct_pairs AS (
+		SELECT
+			source,
+			target,
+			MIN(datetime(created)) AS first_created,
+			MAX(datetime(created)) AS most_recent_created
+		FROM Received
+		GROUP BY source, target
+	),
+	most_recent_ids AS (
+		SELECT
+			-- in case there are multiple with the same timestamp, select one deterministically
+			MAX(Received.id) AS id,
+			-- pass this through so we can get it at the end...
+			-- we're taking a MAX() but they should all be the same
+			MAX(distinct_pairs.first_created) AS first_created
+		FROM distinct_pairs JOIN Received 
+			ON
+				distinct_pairs.source = Received.source AND
+				distinct_pairs.target = Received.target AND
+				distinct_pairs.most_recent_created = Received.created
+		GROUP BY 
+			distinct_pairs.source,
+			distinct_pairs.target,
+			distinct_pairs.most_recent_created
+	)
+	SELECT 
+		most_recent_ids.id,
+		Received.source,
+		Received.target,
+		Received.is_gone,
+		-- more from Received here as we add things...
+		most_recent_ids.first_created AS created,
+		Received.created AS last_modified
+	FROM most_recent_ids
+		JOIN Received 
+		USING (id)
+	ORDER BY last_modified ASC;
     `);
-    console.log("New table Received created!");
+    console.log("Received table and Mentions view created!");
   }
 });
 
