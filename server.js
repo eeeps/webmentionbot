@@ -435,13 +435,14 @@ fastify.get( '/', async ( req, reply ) => {
     reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
     return;
   }
-  const response = getMentions( query.target );
+  const response = await getMentions( query.target );
+  console.log(response);
   reply.send( response );
 } );
 
 async function getMentions( target ) {
   
-  return new Promise( (resolve, reject) => {
+  return await new Promise( (resolve, reject) => {
 
     const statement = db.prepare( `
 SELECT *
