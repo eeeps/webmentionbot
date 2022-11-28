@@ -445,11 +445,19 @@ async function getMentions( target ) {
   return await new Promise( (resolve, reject) => {
 
     const statement = db.prepare( `
-SELECT *
+SELECT source
 FROM Mentions
-WHERE target = ?;
+WHERE target = ? AND
+is_gone = 0;
 `, [ target ] );
-    statement.all( (err, rows) => { resolve( rows ); } );
+    statement.all( (err, rows) => {
+      const remapped = rows.map( d => {
+        return {
+          'url': d.source
+        };
+      } );
+      resolve( remapped );
+    } );
     // statement.finalize(); // ?
     
   } );
