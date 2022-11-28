@@ -442,15 +442,9 @@ fastify.get( '/', async ( req, reply ) => {
 function getMentions( target ) {
   
   const statement = db.prepare( `
-SELECT
-  source,
-  target,
-  MAX(created) AS created
+SELECT *
 FROM Received
-WHERE target = ?
-GROUP BY
-  source,
-  target;
+WHERE target = ?;
 `, [ target ] );
   statement.all( (err, rows) => { console.log(rows) } );
   // statement.finalize(); // ?
