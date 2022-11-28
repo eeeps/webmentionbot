@@ -35,8 +35,9 @@ CREATE TABLE "Received" (
 "target" TEXT NOT NULL,
 "created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
 "is_gone" INTEGER NOT NULL DEFAULT 0
-);
+);` );
 
+    db.run(`
 CREATE VIEW Mentions AS 
 	WITH distinct_pairs AS (
 		SELECT
@@ -76,7 +77,7 @@ CREATE VIEW Mentions AS
 		JOIN Received 
 		USING (id)
 	ORDER BY last_modified ASC;
-    `);
+`);
     console.log("Received table and Mentions view created!");
   }
 });
@@ -436,7 +437,6 @@ fastify.get( '/', async ( req, reply ) => {
     return;
   }
   const response = await getMentions( query.target );
-  console.log(response);
   reply.send( response );
 } );
 
@@ -446,7 +446,7 @@ async function getMentions( target ) {
 
     const statement = db.prepare( `
 SELECT *
-FROM Received
+FROM Mentions
 WHERE target = ?;
 `, [ target ] );
     statement.all( (err, rows) => { resolve( rows ); } );
