@@ -439,15 +439,19 @@ fastify.get( '/', async ( req, reply ) => {
   reply.send( response );
 } );
 
-function getMentions( target ) {
+async function getMentions( target ) {
   
-  const statement = db.prepare( `
+  return new Promise( (resolve, reject) => {
+
+    const statement = db.prepare( `
 SELECT *
 FROM Received
 WHERE target = ?;
 `, [ target ] );
-  statement.all( (err, rows) => { console.log(rows) } );
-  // statement.finalize(); // ?
+    statement.all( (err, rows) => { resolve( rows ); } );
+    // statement.finalize(); // ?
+    
+  } );
   
 }
 
