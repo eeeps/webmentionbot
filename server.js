@@ -475,7 +475,7 @@ VALUES (?, ?);
     );
     
     statement.run();
-    statement.finalize();
+    statement.finalize(); // ?
     
   } );
 
