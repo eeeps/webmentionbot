@@ -88,7 +88,7 @@ function lookForEndpointsInHeaders( response ) {
   
   const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
                                                      // concats multiple headers into a comma separated string
-  // console.log(linkHeader)
+
   if ( linkHeader ) { 
     const parsedLinks = li.parse( linkHeader, { extended: true } ); // returns an empty array if parsing finds no valid links.
 	  const webmentionEndpoints = parsedLinks
