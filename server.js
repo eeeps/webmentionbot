@@ -274,7 +274,7 @@ fastify.post( '/send', async ( req, reply ) => {
   
   // console.log('right before discoverEndpoint');
   const discovered = await discoverEndpoint( targetURL );
-  // console.log( 'right after discoverEndpoint', endpoint );
+  console.log( 'right after discoverEndpoint', discovered );
   
   if ( !discovered.ok ) {
     reply
