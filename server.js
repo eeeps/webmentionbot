@@ -428,6 +428,17 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 // endpoint to get mentions
 
 fastify.get( '/inbox', async ( req, reply ) => {
+  
+  // check auth
+  const authorized = false;
+  // TODO check here
+  if (!authorized) {
+    reply
+      .code(401)
+      .header('WWW-Authenticate', 'Bearer')
+      .send()
+  }
+  
   const query = req.query;
   if ( !query.target ) {
     reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
