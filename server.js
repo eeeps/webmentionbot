@@ -250,7 +250,7 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
 
 // 3.1 Sending Webmentions
 
-fastify.post( '/send', async ( req, reply ) => {
+fastify.post( '/outbox', async ( req, reply ) => {
   
   // validate incoming request
   
@@ -314,7 +314,7 @@ ${ wmResponse.body }` );
 
 // receive posts
 
-fastify.post( '/', ( req, reply ) => {
+fastify.post( '/inbox', ( req, reply ) => {
   
   // 3.2 Receiving Webmentions
   // Upon receipt of a POST request containing the source and target parameters...
@@ -415,19 +415,19 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 }
 
 // for testing only!
-fastify.post( '/storeMention', async ( req, reply ) => {
-  const sourceURL = new URL( req.body.source ),
-        targetURL = new URL( req.body.target );
-  storeMention( sourceURL.href, targetURL.href );
-  reply
-    .code(200)
-    .send('hi')
-} );
+// fastify.post( '/storeMention', async ( req, reply ) => {
+//   const sourceURL = new URL( req.body.source ),
+//         targetURL = new URL( req.body.target );
+//   storeMention( sourceURL.href, targetURL.href );
+//   reply
+//     .code(200)
+//     .send('hi')
+// } );
 
 
 // endpoint to get mentions
 
-fastify.get( '/', async ( req, reply ) => {
+fastify.get( '/inbox', async ( req, reply ) => {
   const query = req.query;
   if ( !query.target ) {
     reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
