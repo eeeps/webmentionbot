@@ -5,7 +5,9 @@ const fastify = Fastify({
   logger: true
 });
 
-import fastifyFormbody from 'fastify-formbody';
+
+
+import fastifyFormbody from '@fastify/formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
 
@@ -13,15 +15,306 @@ import url from 'url';
 import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
+import li from 'li';
 
-import pg from 'pg';
-const { Client } = pg;
+import fs from 'fs';
+import sqlite3 from 'sqlite3';
+sqlite3.verbose();
+
+const dbFile = "./.data/sqlite.db";
+const exists = fs.existsSync(dbFile);
+const db = new sqlite3.Database(dbFile);
+
+// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+db.serialize(() => {
+  if (!exists) {
+    db.run(`
+CREATE TABLE "Received" (
+"id" INTEGER PRIMARY KEY,
+"source" TEXT NOT NULL,
+"target" TEXT NOT NULL,
+"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
+"is_gone" INTEGER NOT NULL DEFAULT 0
+);` );
+
+    db.run(`
+CREATE VIEW Mentions AS 
+	WITH distinct_pairs AS (
+		SELECT
+			source,
+			target,
+			MIN(datetime(created)) AS first_created,
+			MAX(datetime(created)) AS most_recent_created
+		FROM Received
+		GROUP BY source, target
+	),
+	most_recent_ids AS (
+		SELECT
+			-- in case there are multiple with the same timestamp, select one deterministically
+			MAX(Received.id) AS id,
+			-- pass this through so we can get it at the end...
+			-- we're taking a MAX() but they should all be the same
+			MAX(distinct_pairs.first_created) AS first_created
+		FROM distinct_pairs JOIN Received 
+			ON
+				distinct_pairs.source = Received.source AND
+				distinct_pairs.target = Received.target AND
+				distinct_pairs.most_recent_created = Received.created
+		GROUP BY 
+			distinct_pairs.source,
+			distinct_pairs.target,
+			distinct_pairs.most_recent_created
+	)
+	SELECT 
+		most_recent_ids.id,
+		Received.source,
+		Received.target,
+		Received.is_gone,
+		-- more from Received here as we add things...
+		most_recent_ids.first_created AS created,
+		Received.created AS last_modified
+	FROM most_recent_ids
+		JOIN Received 
+		USING (id)
+	ORDER BY last_modified ASC;
+`);
+    console.log("Received table and Mentions view created!");
+  }
+});
+
+
+// returns [ "https://...", "https://...", ... ]
+function lookForEndpointsInHeaders( response ) {
+  
+  const linkHeader = response.headers.get( 'link' ); // returns null if there aren't any
+                                                     // concats multiple headers into a comma separated string
+
+  if ( linkHeader ) { 
+    const parsedLinks = li.parse( linkHeader, { extended: true } ); // returns an empty array if parsing finds no valid links.
+	  const webmentionEndpoints = parsedLinks
+		  .filter( l => l.link && l.rel && l.rel.includes( 'webmention' ) )
+		  .map( l => l.link );
+    return webmentionEndpoints;
+  }
+  
+  return [];
+
+}
+
+// returns [ "https://...", "https://...", ... ]
+async function lookForEndpointsInHTML( response, contentType ) {
+  
+  const bodyText = await response.text();
+  const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
+
+  return [ ...document.querySelectorAll( "link[rel='webmention'], a[rel='webmention']" ) ]
+    .map( d => d.getAttribute( 'href' ) )
+    .filter( d => !!d );
+  
+}
+
+// returns { status: 200, ok: true, endpoint: "https://..." }
+async function lookForEndpointUsingHeadRequest( toURL, fetchOptions ) {
+  
+  // deep copy...
+  const fetchOpts = JSON.parse(JSON.stringify( fetchOptions ));
+  // change method
+  fetchOpts.method = "HEAD";
+  
+  const response = await fetch( toURL.href, fetchOpts );
+  
+  const result = {
+    ok: response.ok,
+    status: response.status,
+    endpoint: null
+  };
+  
+  if ( response.ok ) {
+    const endpoints = lookForEndpointsInHeaders( response );
+    if ( endpoints && endpoints[ 0 ] ) {
+      result.endpoint = endpoints[ 0 ];
+    }
+  }
+  
+  return result;
+  
+}
+
+// TODO? feels pretty repetetive...
+// returns { status: 200, ok: true, endpoint: "https://..." }
+async function lookForEndpointUsingGetRequest( toURL, fetchOptions ) {
+  
+  // The sender must fetch the target URL (and follow redirects)
+  const response = await fetch( toURL.href, fetchOptions );
+  
+  const result = {
+    ok: response.ok,
+    status: response.status,
+    endpoint: null
+  };
+    
+  if ( response.ok ) {
+   
+    // and check for an HTTP Link header [RFC5988] with a rel value of webmention.
+    const endpointsInHeaders = lookForEndpointsInHeaders( response );
+    if ( endpointsInHeaders && endpointsInHeaders[ 0 ] ) {
+      
+      result.endpoint = endpointsInHeaders[ 0 ];
+      
+    } else {
+
+      //  If the content type of the document is HTML,
+      // then the sender must look for an HTML <link> and <a> element with a rel value of webmention
+      const contentType = response.headers.get( 'content-type' );
+      if ( contentType && isHTMLish( contentType ) ) {
+        const endpointsInHTML = await lookForEndpointsInHTML( response, contentType );
+        result.endpoint = endpointsInHTML[ 0 ];
+      }
+      
+    }
+
+  }
+    
+  return result;
+  
+}
+
+// returns { status: 200, ok: true, endpoint: "https://..." }
+async function discoverEndpoint( toURL ) {
+  
+  // 3.1.2 Sender discovers receiver Webmention endpoint
+  
+  // Senders may customize the HTTP User Agent [RFC7231]
+  // used when fetching the target URL in order to indicate to the recipient
+  // that this request is made as part of Webmention discovery.
+  // In this case, it is recommended to include the string "Webmention" in the User Agent.
+  const fetchOptions = {
+    headers: {
+      'Accept': 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8', // TODO this is browsers' for navigation requests. add json? text?
+      'User-Agent': 'Webmentioner/0.1 node-fetch'
+    },
+  	redirect: 'follow',
+	  follow: 20
+  };
+  
+  // Senders may initially make an HTTP HEAD request [RFC7231] 
+  // to check for the Link header before making a GET request.
+  
+  // console.log( 'right before endpointFromHeadRequest' );
+  const h = await lookForEndpointUsingHeadRequest( toURL, fetchOptions );
+  // console.log( 'right after endpointFromHeadRequest' );
+  if ( h.ok && h.endpoint ) {
+     return h;
+  }
+    
+  // The sender must fetch the target URL... (con't in function)
+  // console.log( 'right before endpointFromGetRequest' );
+  const g = await lookForEndpointUsingGetRequest( toURL, fetchOptions );
+  // console.log( 'right after endpointFromGetRequest' );
+  return g
+  
+}
+
+// returns { status: 200, ok: true, body: "Yay!" }
+async function sendWebmention( sourceURL, targetURL, endpointURL ) {
+
+  // 3.1.3 Sender notifies receiver
+  //
+  // The sender must post x-www-form-urlencoded [HTML5] source and target parameters
+  // to the Webmention endpoint, where source is the URL of the sender's page
+  // containing a link, and target is the URL of the page being linked to.
+
+  const formBody = new URLSearchParams();
+  formBody.set( 'source', sourceURL.href );
+  formBody.set( 'target', targetURL.href );
+  
+  const response = await fetch( endpointURL.href, {
+    method: 'POST',
+    headers: {
+      'User-Agent': 'Webmentioner/0.1 node-fetch',
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+    },
+  	redirect: 'follow', // needed?
+	  follow: 20,
+    body: formBody
+  } );
+  
+  return {
+    status: response.status,
+    ok: response.ok,
+    body: await response.text()
+  };
+
+}
+
+
+// 3.1 Sending Webmentions
+
+fastify.post( '/outbox', async ( req, reply ) => {
+  
+  // validate incoming request
+  
+  // we need a source and target...
+  if ( !( req.body.source && req.body.target ) ) {
+    reply
+      .code( 400 )
+      .send( "POST request must contain x-www-form-urlencoded `source` and `target` parameters" );
+    return;
+  }
+  // ...and they need to be valid URLs
+  let sourceURL, targetURL;
+  try {
+    sourceURL = new URL( req.body.source );
+    targetURL = new URL( req.body.target );
+  } catch {
+    reply.code( 400 ).send( "Source and target URLs must be valid URLs." );
+    return;
+  }
+  
+  const discovered = await discoverEndpoint( targetURL );
+  
+  if ( !discovered.ok ) {
+    reply
+      .code( 400 )
+      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
+      return;
+  }
+  if ( !discovered.endpoint ) {
+    reply
+      .code( 400 )
+      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` )
+      return;
+  }
+  let endpointURL;
+  try {
+    endpointURL = new URL( discovered.endpoint );
+  } catch {
+    reply
+      .code( 400 )
+      .send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+    return;
+  }
+    
+  const wmResponse = await sendWebmention( sourceURL, targetURL, endpointURL );
+  
+  if ( wmResponse.ok ) {
+    reply
+      .code( 200 )
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
+${ wmResponse.body }` );
+  } else {
+    reply
+      .code( 400 )
+      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
+${ wmResponse.body }` );
+  }
+} );
 
 
 
 // receive posts
 
-fastify.post( '/', ( req, reply ) => {
+fastify.post( '/inbox', ( req, reply ) => {
   
   // 3.2 Receiving Webmentions
   // Upon receipt of a POST request containing the source and target parameters...
@@ -113,16 +406,28 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
     console.log( 'Source URL does not contain a link to the target URL.' )
     return;
   }
+
   console.log('Verified! Storing webmention...')  
   
-  await storeMention( sourceURL.href, targetURL.href );
+  storeMention( sourceURL.href, targetURL.href );
   // await getMentions();
   
 }
 
+// for testing only!
+// fastify.post( '/storeMention', async ( req, reply ) => {
+//   const sourceURL = new URL( req.body.source ),
+//         targetURL = new URL( req.body.target );
+//   storeMention( sourceURL.href, targetURL.href );
+//   reply
+//     .code(200)
+//     .send('hi')
+// } );
+
+
 // endpoint to get mentions
 
-fastify.get( '/', async ( req, reply ) => {
+fastify.get( '/inbox', async ( req, reply ) => {
   const query = req.query;
   if ( !query.target ) {
     reply.code( 400 ).send( 'GET requests must come with a target query parameter.' );
@@ -132,50 +437,44 @@ fastify.get( '/', async ( req, reply ) => {
   reply.send( response );
 } );
 
-function dbClient() {
-  const dbConfig = {
-    connectionString: process.env.DATABASE_URL
-  };
-  if ( !( /^postgresq?l?\:\/\/localhost/.test( process.env.DATABASE_URL ) ) ) {
-    // no ssl locally
-    dbConfig.ssl = { rejectUnauthorized: false };
-  }
-  return( new Client( dbConfig ) );
-}
-
 async function getMentions( target ) {
-  const client = dbClient();
-  client.connect();
-  const text = 'SELECT * FROM mentions WHERE target = $1';
-  const values = [ target ];
-  const res = await client.query( text, values );
-  client.end();
-  return res.rows;
+  
+  return await new Promise( (resolve, reject) => {
+
+    const statement = db.prepare( `
+SELECT source
+FROM Mentions
+WHERE target = ? AND
+is_gone = 0;
+`, [ target ] );
+    statement.all( (err, rows) => {
+      const remapped = rows.map( d => {
+        return {
+          'url': d.source
+        };
+      } );
+      resolve( remapped );
+    } );
+    // statement.finalize(); // ?
+    
+  } );
+  
 }
 
-async function storeMention( source, target ) {
+function storeMention( source, target ) {
 
-  const client = dbClient();
-  client.connect();
-
-  const text = `
-INSERT INTO mentions (source, target)
-VALUES ($1, $2) 
-ON CONFLICT ON CONSTRAINT unique_pairs
-DO 
-   UPDATE SET modified = CURRENT_TIMESTAMP
-RETURNING *;
-`;
-  const values = [ source, target ];
-  
-  try {
-    const res = await client.query( text, values );
-    console.log( res.rows[ 0 ] );
-  } catch ( err ) {
-    console.log( err.stack );
-  }
-  
-  client.end();
+  db.serialize( () => {
+    
+    const statement = db.prepare(`
+INSERT INTO Received (source, target)
+VALUES (?, ?);
+`, [ source, target ]
+    );
+    
+    statement.run();
+    statement.finalize(); // ?
+    
+  } );
 
 }
 
@@ -209,7 +508,7 @@ function isHTMLish( contentType ) {
   }, false );
 }
 
-fastify.listen( process.env.PORT, '0.0.0.0', function ( err, address ) {
+fastify.listen( { port: 3000 }, function ( err, address ) {
   if ( err ) {
     fastify.log.error( err );
     process.exit( 1 );
