@@ -247,10 +247,31 @@ async function sendWebmention( sourceURL, targetURL, endpointURL ) {
 
 }
 
+const isAuthorized = function( req ) {
+  let authorized = false;
+  const authorizationHeader = req.headers[ 'authorization' ];
+  if ( authorizationHeader ) {
+    const matched = authorizationHeader.match( /Bearer\s+(.*)/ );
+    if ( matched ) {
+      const token = matched[ 1 ];
+      authorized = token === process.env.TOKEN;
+    }
+  }
+  return authorized;
+}
+
 
 // 3.1 Sending Webmentions
 
 fastify.post( '/outbox', async ( req, reply ) => {
+  
+  // check auth
+  if ( !( isAuthorized( req ) ) ) {
+    return reply
+      .code( 401 )
+      .header( 'WWW-Authenticate', 'Bearer' )
+      .send()
+  }
   
   // validate incoming request
   
@@ -430,14 +451,10 @@ async function processValidWebmentionRequest( { sourceURL, targetURL } ) {
 fastify.get( '/inbox', async ( req, reply ) => {
   
   // check auth
-  const authorized = false;
-  // TODO check here
-  const authorizationHeader = req.headers['authorization'];
-  console.log(authorizationHeader);
-  if (!authorized) {
+  if ( !( isAuthorized( req ) ) ) {
     return reply
-      .code(401)
-      .header('WWW-Authenticate', 'Bearer')
+      .code( 401 )
+      .header( 'WWW-Authenticate', 'Bearer' )
       .send()
   }
   
