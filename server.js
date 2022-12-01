@@ -432,8 +432,10 @@ fastify.get( '/inbox', async ( req, reply ) => {
   // check auth
   const authorized = false;
   // TODO check here
+  const authorizationHeader = req.headers['authorization'];
+  console.log(authorizationHeader);
   if (!authorized) {
-    reply
+    return reply
       .code(401)
       .header('WWW-Authenticate', 'Bearer')
       .send()
