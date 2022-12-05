@@ -315,7 +315,7 @@ fastify.post( '/outbox', async ( req, reply ) => {
   }
   if ( !discovered.endpoint ) {
     reply
-      .code( 400 )
+      .code( 400 ) // ?
       .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` )
       return;
   }
