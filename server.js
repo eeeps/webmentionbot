@@ -36,6 +36,19 @@ CREATE TABLE "Received" (
 "created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
 "is_gone" INTEGER NOT NULL DEFAULT 0
 );` );
+    
+    db.run(`
+CREATE TABLE "Sent" (
+"id" INTEGER PRIMARY KEY,
+"source" TEXT NOT NULL,
+"target" TEXT NOT NULL,
+"source_updated_date" TEXT NOT NULL,
+"target_http_response_code" INTEGER,
+"target_webmention_endpoint" TEXT,
+"webmention_http_response_code" INTEGER,
+"webmention_response_body" TEXT,
+"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
+);` );
 
     db.run(`
 CREATE VIEW Mentions AS 
