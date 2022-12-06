@@ -522,14 +522,16 @@ VALUES (?, ?);
 }
 
 function storeSent( o ) {
-
-"source" TEXT NOT NULL,
-"target" TEXT NOT NULL,
-"source_updated_date" TEXT NOT NULL,
-"target_http_response_code" INTEGER,
-"target_webmention_endpoint" TEXT,
-"webmention_http_response_code" INTEGER,
-"webmention_response_body" TEXT,  
+  
+  const {
+    source,
+    target,
+    source_updated_date,
+    target_http_response_code,
+    target_webmention_endpoint,
+    webmention_http_response_code,
+    webmention_response_body
+  } = o;
   
   db.serialize( () => {
     
@@ -543,9 +545,17 @@ INSERT INTO Sent (
   webmention_http_response_code,
   webmention_response_body
 )
-VALUES (?, ?);
-`, [ 
-      source, target ]
+VALUES (?, ?, ?, ?, ?, ?, ?);
+`,
+      [
+          source,
+          target,
+          source_updated_date,
+          target_http_response_code,
+          target_webmention_endpoint,
+          webmention_http_response_code,
+          webmention_response_body
+      ]
     );
     
     statement.run();
