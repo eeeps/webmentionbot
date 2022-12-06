@@ -323,7 +323,7 @@ fastify.post( '/outbox', async ( req, reply ) => {
   }
   if ( !discovered.endpoint ) {
     reply
-      .code( 200 ) // think through why this is a 200 but invalid target is a 400...
+      .code( 200 ) // think through why this is a 200 but getting a 400 back from the target URL is a 400...
       .send( `No webmention sent; couldn’t find a webmention endpoint for ${ targetURL }.` );
     storeSent( { 
       source: sourceURL, 
