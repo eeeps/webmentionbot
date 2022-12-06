@@ -18,7 +18,9 @@ import fs from 'fs';
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
-const config = require('./config.json');
+const config = JSON.parse(
+  fs.readFileSync('./config.json')
+);
 
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
@@ -286,6 +288,7 @@ fastify.post( '/outbox', async ( req, reply ) => {
   }
   
   // validate incoming request
+  // TODO standardize how this is done between sending and receiving?
   
   // we need a source and target...
   if ( !( req.body.source && req.body.target ) ) {
@@ -320,7 +323,7 @@ fastify.post( '/outbox', async ( req, reply ) => {
   }
   if ( !discovered.endpoint ) {
     reply
-      .code( 200 )
+      .code( 200 ) // think through why this is a 200 but invalid target is a 400...
       .send( `No webmention sent; couldn’t find a webmention endpoint for ${ targetURL }.` );
     storeSent( { 
       source: sourceURL, 
