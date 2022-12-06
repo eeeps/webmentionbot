@@ -5,8 +5,6 @@ const fastify = Fastify({
   logger: true
 });
 
-
-
 import fastifyFormbody from '@fastify/formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
@@ -16,10 +14,11 @@ import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
-
 import fs from 'fs';
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
+
+fs.readFileSync(path, options);
 
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
