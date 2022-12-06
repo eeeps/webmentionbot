@@ -305,24 +305,24 @@ fastify.post( '/outbox', async ( req, reply ) => {
     return;
   }
   
+  // source URL must be from our domain
+  if ( sourceURL.hostname !== 'ericportis.com' ) {
+    reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
+    return;
+  }
+  
   const discovered = await discoverEndpoint( targetURL );
   
   if ( !discovered.ok ) {
     reply
       .code( 400 )
       .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` );
-    storeSent( { 
-      source: sourceURL, 
-      target: targetURL,
-      source_updated_date: 'TODO',
-      target_http_response_code: discovered.status
-    } );
     return;
   }
   if ( !discovered.endpoint ) {
     reply
-      .code( 400 ) // ?
-      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` );
+      .code( 200 )
+      .send( `No webmention sent; couldn’t find a webmention endpoint for ${ targetURL }.` );
     storeSent( { 
       source: sourceURL, 
       target: targetURL,
@@ -337,8 +337,8 @@ fastify.post( '/outbox', async ( req, reply ) => {
     endpointURL = new URL( discovered.endpoint );
   } catch {
     reply
-      .code( 400 )
-      .send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+      .code( 200 )
+      .send( `No webmention sent; ${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
     storeSent( { 
       source: sourceURL, 
       target: targetURL,
@@ -354,12 +354,12 @@ fastify.post( '/outbox', async ( req, reply ) => {
   if ( wmResponse.ok ) {
     reply
       .code( 200 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
+      .send( `Webmention sent! Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
 ${ wmResponse.body }` );
   } else {
     reply
-      .code( 400 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
+      .code( 200 )
+      .send( `Webmention sent, but ${ targetURL }’s endpoint (${ endpointURL }) responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
 ${ wmResponse.body }` );
     storeSent( { 
       source: sourceURL, 
