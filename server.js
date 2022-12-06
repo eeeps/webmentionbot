@@ -18,7 +18,7 @@ import fs from 'fs';
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
-fs.readFileSync(path, options);
+const config = require('./config.json');
 
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
@@ -305,7 +305,7 @@ fastify.post( '/outbox', async ( req, reply ) => {
   }
   
   // source URL must be from our domain
-  if ( sourceURL.hostname !== 'ericportis.com' ) {
+  if ( sourceURL.hostname !== config.hostname ) {
     reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
     return;
   }
@@ -420,7 +420,7 @@ fastify.post( '/inbox', ( req, reply ) => {
   
   // The receiver should check that target is a valid resource for which it can accept Webmentions.
   // This check should happen synchronously to reject invalid Webmentions before more in-depth verification begins.
-  if ( targetURL.hostname !== 'ericportis.com' ) {
+  if ( targetURL.hostname !== config.hostname ) {
     reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
     return;
   }
@@ -597,7 +597,7 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
   // doing a simple regex instead is universal across content types and quite simple
   // BUT, it matches too many things
   // e.g., target=https://ericportis.com would match a target document containing
-  //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
+  //       <a href="https://x/posts/2021/whatever/>blah</a>
   // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
   
   
