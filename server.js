@@ -310,14 +310,27 @@ fastify.post( '/outbox', async ( req, reply ) => {
   if ( !discovered.ok ) {
     reply
       .code( 400 )
-      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
-      return;
+      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status
+    } );
+    return;
   }
   if ( !discovered.endpoint ) {
     reply
       .code( 400 ) // ?
-      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` )
-      return;
+      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: null
+    } );
+    return;
   }
   let endpointURL;
   try {
@@ -326,6 +339,13 @@ fastify.post( '/outbox', async ( req, reply ) => {
     reply
       .code( 400 )
       .send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: `invalid (${ discovered.endpoint })`
+    } );
     return;
   }
     
@@ -341,6 +361,15 @@ ${ wmResponse.body }` );
       .code( 400 )
       .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
 ${ wmResponse.body }` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: endpointURL,
+      webmention_http_response_code: wmResponse.status,
+      webmention_response_body: wmResponse.body
+    } );
   }
 } );
 
