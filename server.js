@@ -521,17 +521,15 @@ VALUES (?, ?);
 
 }
 
-function storeSent( o ) {
-  
-  const {
-    source,
-    target,
-    source_updated_date,
-    target_http_response_code,
-    target_webmention_endpoint,
-    webmention_http_response_code,
-    webmention_response_body
-  } = o;
+function storeSent( {
+  source,
+  target,
+  source_updated_date,
+  target_http_response_code,
+  target_webmention_endpoint,
+  webmention_http_response_code,
+  webmention_response_body
+} ) {
   
   db.serialize( () => {
     
