@@ -521,6 +521,40 @@ VALUES (?, ?);
 
 }
 
+function storeSent( o ) {
+
+"source" TEXT NOT NULL,
+"target" TEXT NOT NULL,
+"source_updated_date" TEXT NOT NULL,
+"target_http_response_code" INTEGER,
+"target_webmention_endpoint" TEXT,
+"webmention_http_response_code" INTEGER,
+"webmention_response_body" TEXT,  
+  
+  db.serialize( () => {
+    
+    const statement = db.prepare(`
+INSERT INTO Sent (
+  source, 
+  target,
+  source_updated_date,
+  target_http_response_code,
+  target_webmention_endpoint,
+  webmention_http_response_code,
+  webmention_response_body
+)
+VALUES (?, ?);
+`, [ 
+      source, target ]
+    );
+    
+    statement.run();
+    statement.finalize(); // ?
+    
+  } );
+
+}
+
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples
