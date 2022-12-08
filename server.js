@@ -287,6 +287,26 @@ fastify.post( '/outbox', async ( req, reply ) => {
       .send()
   }
   
+  if ( req.query.fromAtom ) {
+    
+    //do atom stuff
+    let feedURL;
+    try {
+      feedURL = new URL( req.query.fromAtom );
+    } catch {
+      reply.code( 400 ).send( "fromAtom must be a valid URL." );
+      return;
+    }
+    
+    // load feedURL
+    // parse feedURL
+    // loop through items, discover links, send webmentions
+    
+    return reply
+      .code( 200 )
+      .send('atom stuff')
+  }
+  
   // validate incoming request
   // TODO standardize how this is done between sending and receiving?
   
