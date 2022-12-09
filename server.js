@@ -23,7 +23,9 @@ const config = JSON.parse(
   fs.readFileSync('./config.json')
 );
 
-import './lib/isHTMLish.js';
+import isHTMLish from './lib/isHTMLish.js';
+
+console.log(isHTMLish);
 
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
