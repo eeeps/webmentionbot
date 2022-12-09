@@ -300,18 +300,23 @@ fastify.post( '/outbox', async ( req, reply ) => {
     }
     
     // load and parse feedURL
-    const parser = new Parser();
+    const parser = new Parser( {
+      customFields: {
+        item: [ 'updated' ]
+      }
+    } );
     const feed = await parser.parseURL( feedURL.href );
-    console.log(feed.title);
+    // console.log(feed.title);
 
     // loop through items, discover links, send webmentions
-    feed.items.forEach(item => {
+    feed.items.forEach( item => {
+      
       const document = new JSDOM( item.content ).window.document;
       const anchors = [ ...document.querySelectorAll( 'a[href]' ) ];
       anchors.forEach( a => {
-      console.log( `source=${ item.link }
+        console.log( `source=${ item.link }
 target=${ a.href }
-sourceUpdated=${ item.lastBuildDate }` + '\n' );
+sourceUpdated=${ item.updated }` + '\n' );
       } );
 
     });
