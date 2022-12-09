@@ -23,11 +23,13 @@ const config = JSON.parse(
   fs.readFileSync('./config.json')
 );
 
+import './lib/isHTMLish.js';
+
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
 const db = new sqlite3.Database(dbFile);
 
-// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
+// if ./.data/sqlite.db does not exist, create it
 db.serialize(() => {
   if (!exists) {
     db.run(`
@@ -642,7 +644,6 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
   //       <a href="https://x/posts/2021/whatever/>blah</a>
   // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
   
-  
   if ( isHTMLish( contentType ) ) {
     const { document } = ( new JSDOM( bodyText, { contentType: contentType } ) ).window;
     const anchor = document.querySelector( `a[href='${ targetURL }']` );
@@ -653,15 +654,6 @@ function mentionsTarget( bodyText, targetURL, contentType ) {
   
 }
 
-function isHTMLish( contentType ) {
-  const htmlishContentTypes = [
-    /text\/html/i,
-    /application\/xhtml\+xml/i
-  ];
-  return htmlishContentTypes.reduce( ( acc, cv ) => {
-    return acc || cv.test( contentType );
-  }, false );
-}
 
 fastify.listen( { port: 3000 }, function ( err, address ) {
   if ( err ) {
