@@ -5,8 +5,6 @@ const fastify = Fastify({
   logger: true
 });
 
-
-
 import fastifyFormbody from '@fastify/formbody';
 // handle posts with formbodys
 fastify.register( fastifyFormbody );
@@ -16,10 +14,14 @@ import fetch from 'node-fetch';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
-
 import fs from 'fs';
+import Parser from 'rss-parser';
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
+
+const config = JSON.parse(
+  fs.readFileSync('./config.json')
+);
 
 const dbFile = "./.data/sqlite.db";
 const exists = fs.existsSync(dbFile);
@@ -35,6 +37,19 @@ CREATE TABLE "Received" (
 "target" TEXT NOT NULL,
 "created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL,
 "is_gone" INTEGER NOT NULL DEFAULT 0
+);` );
+    
+    db.run(`
+CREATE TABLE "Sent" (
+"id" INTEGER PRIMARY KEY,
+"source" TEXT NOT NULL,
+"target" TEXT NOT NULL,
+"source_updated_date" TEXT NOT NULL,
+"target_http_response_code" INTEGER,
+"target_webmention_endpoint" TEXT,
+"webmention_http_response_code" INTEGER,
+"webmention_response_body" TEXT,
+"created" TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
 );` );
 
     db.run(`
@@ -273,7 +288,46 @@ fastify.post( '/outbox', async ( req, reply ) => {
       .send()
   }
   
+  if ( req.query.fromAtom ) {
+    
+    //do atom stuff
+    let feedURL;
+    try {
+      feedURL = new URL( req.query.fromAtom );
+    } catch {
+      reply.code( 400 ).send( "fromAtom must be a valid URL." );
+      return;
+    }
+    
+    // load and parse feedURL
+    const parser = new Parser( {
+      customFields: {
+        item: [ 'updated' ]
+      }
+    } );
+    const feed = await parser.parseURL( feedURL.href );
+    // console.log(feed.title);
+
+    // loop through items, discover links, send webmentions
+    feed.items.forEach( item => {
+      
+      const document = new JSDOM( item.content ).window.document;
+      const anchors = [ ...document.querySelectorAll( 'a[href]' ) ];
+      anchors.forEach( a => {
+        console.log( `source=${ item.link }
+target=${ a.href }
+sourceUpdated=${ item.updated }` + '\n' );
+      } );
+
+    });
+        
+    return reply
+      .code( 200 )
+      .send('atom stuff')
+  }
+  
   // validate incoming request
+  // TODO standardize how this is done between sending and receiving?
   
   // we need a source and target...
   if ( !( req.body.source && req.body.target ) ) {
@@ -292,27 +346,47 @@ fastify.post( '/outbox', async ( req, reply ) => {
     return;
   }
   
+  // source URL must be from our domain
+  if ( sourceURL.hostname !== config.hostname ) {
+    reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
+    return;
+  }
+  
   const discovered = await discoverEndpoint( targetURL );
   
   if ( !discovered.ok ) {
     reply
       .code( 400 )
-      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` )
-      return;
+      .send( `Tried to discover ${ targetURL }’s webmention endpoint via GET but the server responded with HTTP ${ discovered.status }` );
+    return;
   }
   if ( !discovered.endpoint ) {
     reply
-      .code( 400 )
-      .send( `Couldn’t find a webmention endpoint for ${ targetURL }.` )
-      return;
+      .code( 200 ) // think through why this is a 200 but getting a 400 back from the target URL is a 400...
+      .send( `No webmention sent; couldn’t find a webmention endpoint for ${ targetURL }.` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: null
+    } );
+    return;
   }
   let endpointURL;
   try {
     endpointURL = new URL( discovered.endpoint );
   } catch {
     reply
-      .code( 400 )
-      .send( `${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+      .code( 200 )
+      .send( `No webmention sent; ${ targetURL }’s endpoint URL (${ discovered.endpoint }) was not a valid URL.` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: `invalid (${ discovered.endpoint })`
+    } );
     return;
   }
     
@@ -321,13 +395,22 @@ fastify.post( '/outbox', async ( req, reply ) => {
   if ( wmResponse.ok ) {
     reply
       .code( 200 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
+      .send( `Webmention sent! Discovered endpoint for ${ targetURL } (${ endpointURL }) and successfully sent them a webmention. In their response they said:
 ${ wmResponse.body }` );
   } else {
     reply
-      .code( 400 )
-      .send( `Discovered endpoint for ${ targetURL } (${ endpointURL }), but they responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
+      .code( 200 )
+      .send( `Webmention sent, but ${ targetURL }’s endpoint (${ endpointURL }) responsed to the webmention POST with HTTP ${ wmResponse.status }. In their response they said:
 ${ wmResponse.body }` );
+    storeSent( { 
+      source: sourceURL, 
+      target: targetURL,
+      source_updated_date: 'TODO',
+      target_http_response_code: discovered.status,
+      target_webmention_endpoint: endpointURL,
+      webmention_http_response_code: wmResponse.status,
+      webmention_response_body: wmResponse.body
+    } );
   }
 } );
 
@@ -379,7 +462,7 @@ fastify.post( '/inbox', ( req, reply ) => {
   
   // The receiver should check that target is a valid resource for which it can accept Webmentions.
   // This check should happen synchronously to reject invalid Webmentions before more in-depth verification begins.
-  if ( targetURL.hostname !== 'ericportis.com' ) {
+  if ( targetURL.hostname !== config.hostname ) {
     reply.code( 400 ).send( 'Specified target URL does not accept Webmentions.' );
     return;
   }
@@ -508,13 +591,55 @@ VALUES (?, ?);
 
 }
 
+function storeSent( {
+  source,
+  target,
+  source_updated_date,
+  target_http_response_code,
+  target_webmention_endpoint,
+  webmention_http_response_code,
+  webmention_response_body
+} ) {
+  
+  db.serialize( () => {
+    
+    const statement = db.prepare(`
+INSERT INTO Sent (
+  source, 
+  target,
+  source_updated_date,
+  target_http_response_code,
+  target_webmention_endpoint,
+  webmention_http_response_code,
+  webmention_response_body
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+`,
+      [
+          source,
+          target,
+          source_updated_date,
+          target_http_response_code,
+          target_webmention_endpoint,
+          webmention_http_response_code,
+          webmention_response_body
+      ]
+    );
+    
+    statement.run();
+    statement.finalize(); // ?
+    
+  } );
+
+}
+
 
 function mentionsTarget( bodyText, targetURL, contentType ) {
   // spec says you SHOULD do per-content-type processing, lists some examples
   // doing a simple regex instead is universal across content types and quite simple
   // BUT, it matches too many things
   // e.g., target=https://ericportis.com would match a target document containing
-  //       <a href="https://ericportis.com/posts/2021/whatever/>blah</a>
+  //       <a href="https://x/posts/2021/whatever/>blah</a>
   // so I guess we'll do a whole JSDOM thing for HTML, and fallback to regex for other content types... for now
   
   
