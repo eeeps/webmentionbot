@@ -15,6 +15,7 @@ import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
 import li from 'li';
 import fs from 'fs';
+import Parser from 'rss-parser';
 import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
@@ -298,10 +299,23 @@ fastify.post( '/outbox', async ( req, reply ) => {
       return;
     }
     
-    // load feedURL
-    // parse feedURL
+    // load and parse feedURL
+    const parser = new Parser();
+    const feed = await parser.parseURL( feedURL.href );
+    console.log(feed.title);
+
     // loop through items, discover links, send webmentions
-    
+    feed.items.forEach(item => {
+      const document = new JSDOM( item.content ).window.document;
+      const anchors = [ ...document.querySelectorAll( 'a[href]' ) ];
+      anchors.forEach( a => {
+      console.log( `source=${ item.link }
+target=${ a.href }
+sourceUpdated=${ item.lastBuildDate }` + '\n' );
+      } );
+
+    });
+        
     return reply
       .code( 200 )
       .send('atom stuff')
